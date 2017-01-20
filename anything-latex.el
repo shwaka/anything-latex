@@ -1,7 +1,8 @@
 (require 'anything-latex-functions)
-
-;;; anything
 (require 'anything-config)
+
+(defun al-show-persistent-label (label)
+  (al-show-persistent-label-func label anything-current-buffer))
 
 (defun anything-c-latex-get-labels ()
   (al-search-label anything-current-buffer))
@@ -14,7 +15,6 @@
 
 (defvar anything-c-source-latex-labels
   '((name . "Labels")
-    ;; (init . al-label-init)
     (candidates . anything-c-latex-get-labels)
     (action ("Insert Default Ref" . al-insert-default-ref)
 	    ("Jump" . al-jump-label)
@@ -27,7 +27,6 @@
 
 (defvar anything-c-source-latex-bibkeys
   '((name . "Bibkeys")
-    ;; (init . al-bibkey-init)
     (candidates . anything-c-latex-get-bibkeys)
     (action ("Insert Cite" . al-insert-cite))
     (persistent-action . al-show-persistent-bib)))
@@ -48,6 +47,6 @@
 			   ;;anything-c-source-recentf
 			   ;;anything-c-source-print-test
 			   )
-			 "*my anything*"))
+			 "*anything for latex*"))
 
 (provide 'anything-latex)

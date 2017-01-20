@@ -1,3 +1,6 @@
+;;; This elisp file is independent of anything.el.
+;;; Hence you can use this not only in anything.el but also other interface.
+
 (defun al-get-config (buffer)
   "search %ALCONFIG: variable = value"
   (let ((config-pattern "^ *%+ALCONFIG: *\\([a-zA-Z]+\\) *= *\\([a-zA-Z0-9]*\\)")
@@ -107,15 +110,11 @@
 	    (setq env-data-alist nil))
 	env-data-alist))))
 
-(defun al-label-init (&optional buffer)
-  (unless buffer
-    (setq buffer anything-current-buffer))
+(defun al-label-init (buffer)
   (setq al-use-cleveref (al-use-cleveref-p buffer))
   (setq al-theorem-list (al-search-theorem buffer)))
 
-(defun al-bibkey-init (&optional buffer)
-  (unless buffer
-    (setq buffer anything-current-buffer))
+(defun al-bibkey-init (buffer)
   (setq al-bib-file (al-find-bib-file buffer)))
 
 (defun al-init (buffer)
@@ -197,8 +196,8 @@
     (erase-buffer)
     (insert string)))
 
-(defun al-show-persistent-label (label)
-  (with-current-buffer anything-current-buffer
+(defun al-show-persistent-label-func (label buffer)
+  (with-current-buffer buffer
     (save-excursion
       (let (label-point
 	    env-data-alist
