@@ -252,4 +252,22 @@
       (setq actions '(("Insert ref" . (lambda (label) (al-insert-ctrl-seq "ref" label))))))
     actions))
 
+;;; compile
+;; (defvar al-compile-command
+;;   "platex $BASENAME.tex; platex $BASENAME.tex; dvipdfmx $BASENAME.dvi"
+;;   "Command for compilation in anything-latex
+;; The TeX source file can be written as '$BASENAME.tex'.
+;; Similarly, the DVI file as '$BASENAME.dvi'")
+
+;; (defun al-compile (basename)
+;;   (interactive "sInput TeX file name: ")
+;;   (lexical-let ((al-compile-command-replaced (replace-regexp-in-string "$BASENAME" basename al-compile-command t)))
+;;     (deferred:$
+;;       (deferred:next
+;; 	(lambda () (message "start compilation")))
+;;       (deferred:process "platex" (concat basename ".tex") ;; al-compile-command-replaced
+;; 	)
+;;       (deferred:nextc it (lambda (out) (message "finished compilation") (message out)))
+;;       (deferred:error it (lambda (err (message err)))))))
+
 (provide 'anything-latex-functions)
