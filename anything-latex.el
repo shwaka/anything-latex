@@ -4,18 +4,18 @@
 (defun al-show-persistent-label (label)
   (al-show-persistent-label-func label anything-current-buffer))
 
-(defun anything-c-latex-get-labels ()
+(defun anything-c-my-latex-get-labels ()
   (al-search-label anything-current-buffer))
 
-(defun anything-c-latex-get-bibkeys ()
+(defun anything-c-my-latex-get-bibkeys ()
   (al-find-bibkeys))
 
-(defun anything-c-latex-get-theorems ()
+(defun anything-c-my-latex-get-theorems ()
   al-theorem-list)
 
-(defvar anything-c-source-latex-labels
+(defvar anything-c-source-my-latex-labels
   '((name . "Labels")
-    (candidates . anything-c-latex-get-labels)
+    (candidates . anything-c-my-latex-get-labels)
     (action ("Insert Default Ref" . al-insert-default-ref)
 	    ("Jump" . al-jump-label)
 	    ("Insert \\ref" . (lambda (label) (al-insert-ctrl-seq "ref" label)))
@@ -25,24 +25,24 @@
     (persistent-action . al-show-persistent-label)
     ))
 
-(defvar anything-c-source-latex-bibkeys
+(defvar anything-c-source-my-latex-bibkeys
   '((name . "Bibkeys")
-    (candidates . anything-c-latex-get-bibkeys)
+    (candidates . anything-c-my-latex-get-bibkeys)
     (action ("Insert Cite" . al-insert-cite))
     (persistent-action . al-show-persistent-bib)))
 
-(defvar anything-c-source-latex-theorems
+(defvar anything-c-source-my-latex-theorems
   '((name . "Theorems")
-    (candidates . anything-c-latex-get-theorems)
+    (candidates . anything-c-my-latex-get-theorems)
     (action ("Insert" . al-insert-theorem))))
 
 ;;; anything command
 (defun anything-for-latex ()
   (interactive)
   (al-init (current-buffer))
-  (anything-other-buffer '(anything-c-source-latex-theorems
-			   anything-c-source-latex-bibkeys
-			   anything-c-source-latex-labels
+  (anything-other-buffer '(anything-c-source-my-latex-theorems
+			   anything-c-source-my-latex-bibkeys
+			   anything-c-source-my-latex-labels
 			   ;;anything-c-source-buffers
 			   ;;anything-c-source-recentf
 			   ;;anything-c-source-print-test
