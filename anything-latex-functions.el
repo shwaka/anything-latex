@@ -1,6 +1,13 @@
 ;;; This elisp file is independent of anything.el.
 ;;; Hence you can use this not only in anything.el but also other interface.
 
+(defvar al-default-theorem-list
+  '("definition" "theorem" "proposition" "lemma" "corollary" "example" "remark")
+  "theorem list")
+
+(defvar al-default-environment-list
+  '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof"))
+
 (defun al-get-config (buffer)
   "search %ALCONFIG: variable = value"
   (let ((config-pattern "^ *%+ALCONFIG: *\\([a-zA-Z]+\\) *= *\\([a-zA-Z0-9]*\\)")
@@ -48,7 +55,8 @@
       (save-excursion
 	(goto-char (point-min))
 	(if (not (re-search-forward pattern nil t))
-	    (error "\\bibliography{...} not found")
+	    nil
+	    ;; (error "\\bibliography{...} not found")
 	  (substring (shell-command-to-string
 	  	      (format "kpsewhich %s.bib" (match-string 1)))
 	  	     0 -1))))))
@@ -64,7 +72,7 @@
 	(reverse theorem-list)))))
 
 (defun al-use-cleveref-p (buffer)
-  (let ((cleveref-pattern "\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
+  (let ((cleveref-pattern "^[^%]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
 	(use-cleveref nil))
     (with-current-buffer buffer
       (save-excursion
@@ -93,7 +101,7 @@
 	(while (not found)
 	  (setq begin-pattern (al-1-arg-pattern "begin"))
 	  (unless (re-search-backward begin-pattern nil t)
-	    (setq found "failed")) 
+	    (setq found "failed"))
 	  (setq env-name (match-string 1))
 	  (setq begin-pt (point))
 	  (setq end-pattern (al-1-arg-pattern "end" env-name))
@@ -112,7 +120,8 @@
 
 (defun al-label-init (buffer)
   (setq al-use-cleveref (al-use-cleveref-p buffer))
-  (setq al-theorem-list (al-search-theorem buffer)))
+  (setq al-user-theorem-list (al-search-theorem buffer))
+  (setq al-theorem-list (append al-user-theorem-list al-default-theorem-list)))
 
 (defun al-bibkey-init (buffer)
   (setq al-bib-file (al-find-bib-file buffer)))
@@ -135,15 +144,17 @@
   (format "^@[a-zA-Z]* *{\\(%s\\)," bibkey))
 
 (defun al-find-bibkeys ()
-  (let ((res ())
-	)
-    ;; (find-file-noselect bib-file t)
-    (with-temp-buffer
-      (insert-file-contents al-bib-file)
-      (goto-char (point-min))
-      (while (re-search-forward (al-bibkey-pattern) nil t)
-	(add-to-list 'res (match-string 1))))
-    res))
+  (if (not al-bib-file)
+      nil
+    (let ((res ()))
+      ;; (find-file-noselect bib-file t)
+      (with-temp-buffer
+	(insert-file-contents al-bib-file)
+	(goto-char (point-min))
+	(while (re-search-forward (al-bibkey-pattern) nil t)
+	  (add-to-list 'res (match-string 1))))
+      res))
+  )
 
 (defun al-insert-ctrl-seq (ctrl-seq key &optional option)
   "insert \\ctrl-seq{key} or \\ctrl-seq[option]{key}"
@@ -182,11 +193,23 @@
   (al-insert-ctrl-seq "cite" bibkey)
   (add-hook 'pre-command-hook 'al-check-option))
 
-(defun al-insert-theorem (theorem)
-  ;; TODO: indent
-  (insert (format "\\begin{%s}\n \n\\end{%s}" theorem theorem))
-  (re-search-backward "\\\\end{" nil t)
-  (backward-char))
+(defun al-insert-environment-func (envname &optional not-increase-indent)
+  (let ((indent-base (make-string (current-column) ?\ ))
+	(indent-increase "  "))
+    (when not-increase-indent
+      (setq indent-increase ""))
+    (insert (format "\\begin{%s}\n%s%s\n%s\\end{%s}" envname indent-base indent-increase indent-base envname))
+    (forward-line -1)
+    (end-of-line)
+    ;; (re-search-backward "\\\\end{" nil t)
+    ;; (backward-char)
+    ))
+
+(defun al-insert-environment (envname)
+  (let (not-increase-indent)
+    (when (member envname '("document"))
+      (setq not-increase-indent t))
+    (al-insert-environment-func envname not-increase-indent)))
 
 ;;; persistent-action
 (defun al-show-persistent (string)

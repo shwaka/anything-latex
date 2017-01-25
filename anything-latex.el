@@ -4,45 +4,49 @@
 (defun al-show-persistent-label (label)
   (al-show-persistent-label-func label anything-current-buffer))
 
-(defun anything-c-my-latex-get-labels ()
+(defun anything-c-latex-get-labels ()
   (al-search-label anything-current-buffer))
 
-(defun anything-c-my-latex-get-bibkeys ()
+(defun anything-c-latex-get-bibkeys ()
   (al-find-bibkeys))
 
-(defun anything-c-my-latex-get-theorems ()
+(defun anything-c-latex-get-theorems ()
   al-theorem-list)
 
-(defvar anything-c-source-my-latex-labels
+(defvar anything-c-source-latex-labels
   '((name . "Labels")
-    (candidates . anything-c-my-latex-get-labels)
+    (candidates . anything-c-latex-get-labels)
     (action ("Insert Default Ref" . al-insert-default-ref)
 	    ("Jump" . al-jump-label)
 	    ("Insert \\ref" . (lambda (label) (al-insert-ctrl-seq "ref" label)))
 	    ("Insert \\cref" . (lambda (label) (al-insert-ctrl-seq "cref" label)))
-	    ("Insert \\Cref" . (lambda (label) (al-insert-ctrl-seq "Cref" label)))
-    	    )
-    (persistent-action . al-show-persistent-label)
-    ))
+	    ("Insert \\Cref" . (lambda (label) (al-insert-ctrl-seq "Cref" label))))
+    (persistent-action . al-show-persistent-label)))
 
-(defvar anything-c-source-my-latex-bibkeys
+(defvar anything-c-source-latex-bibkeys
   '((name . "Bibkeys")
-    (candidates . anything-c-my-latex-get-bibkeys)
+    (candidates . anything-c-latex-get-bibkeys)
     (action ("Insert Cite" . al-insert-cite))
     (persistent-action . al-show-persistent-bib)))
 
-(defvar anything-c-source-my-latex-theorems
+(defvar anything-c-source-latex-theorems
   '((name . "Theorems")
-    (candidates . anything-c-my-latex-get-theorems)
-    (action ("Insert" . al-insert-theorem))))
+    (candidates . anything-c-latex-get-theorems)
+    (action ("Insert" . al-insert-environment))))
+
+(defvar anything-c-source-latex-environments
+  '((name . "Environments")
+    (candidates . al-default-environment-list)
+    (action ("Insert" . al-insert-environment))))
 
 ;;; anything command
 (defun anything-for-latex ()
   (interactive)
   (al-init (current-buffer))
-  (anything-other-buffer '(anything-c-source-my-latex-theorems
-			   anything-c-source-my-latex-bibkeys
-			   anything-c-source-my-latex-labels
+  (anything-other-buffer '(anything-c-source-latex-environments
+			   anything-c-source-latex-theorems
+			   anything-c-source-latex-bibkeys
+			   anything-c-source-latex-labels
 			   ;;anything-c-source-buffers
 			   ;;anything-c-source-recentf
 			   ;;anything-c-source-print-test
