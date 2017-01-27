@@ -5,8 +5,9 @@
   '("definition" "theorem" "proposition" "lemma" "corollary" "example" "remark")
   "theorem list")
 
+;;; (makunbound 'al-default-environment-list)
 (defvar al-default-environment-list
-  '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof"))
+  '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof" "abstract"))
 
 (defun al-get-config (buffer)
   "search %ALCONFIG: variable = value"
