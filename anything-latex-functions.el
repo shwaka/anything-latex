@@ -1,6 +1,9 @@
 ;;; This elisp file is independent of anything.el.
 ;;; Hence you can use this not only in anything.el but also other interface.
 
+(require 'em-glob)
+
+;;; variables
 (defvar al-default-theorem-list
   '("definition" "theorem" "proposition" "lemma" "corollary" "example" "remark")
   "theorem list")
@@ -8,6 +11,22 @@
 ;;; (makunbound 'al-default-environment-list)
 (defvar al-default-environment-list
   '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof" "abstract"))
+
+(defvar al-texmf-dirs
+  (split-string
+   (shell-command-to-string "kpsewhich -expand-path='$TEXMF'")
+   ":" t)
+  "list of texmf-directories")
+
+
+;;; functions
+
+;;; 未完成：何を返す？
+;;; リストじゃなくて全部繋げた文字列で得る？
+;;; fontsを除外？(see completion of kpsewhich)
+(defun al-list-files-in-texmf ()
+  (dolist (texmf al-texmf-dirs)
+    (eshell-extended-glob (concat texmf "/**/*"))))
 
 (defun al-get-config (buffer)
   "search %ALCONFIG: variable = value"
