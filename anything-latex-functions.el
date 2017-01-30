@@ -12,21 +12,33 @@
 (defvar al-default-environment-list
   '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof" "abstract"))
 
+;; (defvar al-texmf-dirs-user
+;;   (list (concat (getenv "HOME") "/texmf"))
+;;   "user-local texmf directories")
+
+;;; (makunbound 'al-texmf-dirs)
 (defvar al-texmf-dirs
   (split-string
-   (shell-command-to-string "kpsewhich -expand-path='$TEXMF'")
+   (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | perl -pe \"s/\\n//\"")
    ":" t)
-  "list of texmf-directories")
+  "list of texmf directories")
 
+(defvar al-shell-command-list-files
+  "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
+  "command to list files in texmf directories")
 
 ;;; functions
 
-;;; 未完成：何を返す？
-;;; リストじゃなくて全部繋げた文字列で得る？
-;;; fontsを除外？(see completion of kpsewhich)
-(defun al-list-files-in-texmf ()
-  (dolist (texmf al-texmf-dirs)
-    (eshell-extended-glob (concat texmf "/**/*"))))
+;;; exclude fonts??? (see completion of kpsewhich)
+;; (defun al-list-files-in-texmf ()
+;;   (let ((files-list ())
+;; 	glob-res)
+;;     (dolist (texmf al-texmf-dirs)
+;;       (setq glob-res (eshell-extended-glob (concat texmf "/**/*")))
+;;       (when (not (listp glob-res))
+;; 	(setq glob-res ()))
+;;       (setq files-list (append files-list glob-res)))
+;;     files-list))
 
 (defun al-get-config (buffer)
   "search %ALCONFIG: variable = value"
@@ -155,7 +167,9 @@
 	(setq al-reftype reftype)
       (if al-use-cleveref
 	  (setq al-reftype "cref")
-	(setq al-reftype "ref")))))
+	(setq al-reftype "ref"))))
+  ;; (setq al-texmf-files-list (al-list-files-in-texmf))
+  )
 
 (defun al-bibkey-pattern (&optional bibkey)
   (if bibkey
@@ -205,6 +219,14 @@
 ;;   (interactive "sLabel: ")
 ;;   ;; (insert "\\ref{" label "}")
 ;;   (al-insert-ctrl-seq "ref" label))
+
+(defun al-insert-package (package)
+  "insert \\usepackage{package}"
+  (al-insert-ctrl-seq "usepackage" package)
+  (add-hook 'pre-command-hook 'al-check-option))
+
+(defun al-insert-package-path (package-path)
+  (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
 
 (defun al-insert-cite (bibkey)
   "insert \\cite{label}"

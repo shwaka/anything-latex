@@ -39,17 +39,30 @@
     (candidates . al-default-environment-list)
     (action ("Insert" . al-insert-environment))))
 
+;; (defvar anything-c-source-latex-files-candidates-list
+;;   '((name . "LaTeX Files")
+;;     (candidates . al-texmf-files-list)
+;;     (action ("Message" . message))))
+
+;;; TODO: not only \usepackage
+;;; too many candidates to choose (history? remove path?)
+(defvar anything-c-source-latex-files
+  '((name . "LaTeX Files (candidates in buffer)")
+    (init . (lambda () (with-current-buffer (anything-candidate-buffer 'global)
+			 (shell-command al-shell-command-list-files t))))
+    (candidates-in-buffer)
+    (action . al-insert-package-path)))
+
 ;;; anything command
 (defun anything-for-latex ()
   (interactive)
   (al-init (current-buffer))
-  (anything-other-buffer '(anything-c-source-latex-environments
+  (anything-other-buffer '(anything-c-source-latex-files
+			   ;; anything-c-source-latex-files
+			   anything-c-source-latex-environments
 			   anything-c-source-latex-theorems
 			   anything-c-source-latex-bibkeys
 			   anything-c-source-latex-labels
-			   ;;anything-c-source-buffers
-			   ;;anything-c-source-recentf
-			   ;;anything-c-source-print-test
 			   )
 			 "*anything for latex*"))
 
