@@ -53,16 +53,22 @@
     (candidates-in-buffer)
     (action . al-insert-package-path)))
 
+(defvar anything-c-source-latex-commands
+  '((name . "LaTeX Commands")
+    (candidates . ("latexmk" "latexmk clean" "latexmk clean all"))
+    (action ("execute" . al-execute-command))))
+
 ;;; anything command
 (defun anything-for-latex ()
   (interactive)
   (al-init (current-buffer))
-  (anything-other-buffer '(anything-c-source-latex-files
+  (anything-other-buffer '(anything-c-source-latex-commands
 			   ;; anything-c-source-latex-files
 			   anything-c-source-latex-environments
 			   anything-c-source-latex-theorems
 			   anything-c-source-latex-bibkeys
 			   anything-c-source-latex-labels
+			   anything-c-source-latex-files
 			   )
 			 "*anything for latex*"))
 

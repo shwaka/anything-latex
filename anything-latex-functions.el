@@ -317,6 +317,19 @@
       (setq actions '(("Insert ref" . (lambda (label) (al-insert-ctrl-seq "ref" label))))))
     actions))
 
+;;; compile commands
+;;; This is dependent on auctex, latexmk, auctex-latexmk
+(defun al-execute-command (command)
+  (cond ((equal command "latexmk")
+	 (TeX-command "LatexMk" 'TeX-master-file nil))
+	((equal command "latexmk clean")
+	 (shell-command "latexmk -c")
+	 (message "latexmk -c"))
+	((equal command "latexmk clean all")
+	 (shell-command "latexmk -C")
+	 (message "latexmk -C"))
+	))
+
 ;;; compile
 ;; (defvar al-compile-command
 ;;   "platex $BASENAME.tex; platex $BASENAME.tex; dvipdfmx $BASENAME.dvi"
