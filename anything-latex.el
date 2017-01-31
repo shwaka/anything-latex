@@ -55,7 +55,7 @@
 
 (defvar anything-c-source-latex-commands
   '((name . "LaTeX Commands")
-    (candidates . ("latexmk" "latexmk clean" "latexmk clean all"))
+    (candidates . ("latexmk" "view" "latexmk clean" "latexmk clean all"))
     (action ("execute" . al-execute-command))))
 
 ;;; anything command

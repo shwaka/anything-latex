@@ -321,6 +321,7 @@
 ;;; This is dependent on auctex, latexmk, auctex-latexmk
 (defun al-execute-command (command)
   (cond ((equal command "latexmk")
+	 (TeX-save-document (TeX-master-file))
 	 (TeX-command "LatexMk" 'TeX-master-file nil))
 	((equal command "latexmk clean")
 	 (shell-command "latexmk -c")
@@ -328,6 +329,8 @@
 	((equal command "latexmk clean all")
 	 (shell-command "latexmk -C")
 	 (message "latexmk -C"))
+	((equal command "view")
+	 (TeX-command "View" 'TeX-master-file nil))
 	))
 
 ;;; compile
