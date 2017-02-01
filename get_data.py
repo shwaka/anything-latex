@@ -24,8 +24,10 @@ def get_packages(article_id):
         f = open(article_dir + "/" + texfile_name)
         tex_code = f.read()
         f.close()
-        pattern = r"\\usepackage\{([a-zA-Z0-9\-,]*)\}"
-        for match_obj in re.finditer(pattern, tex_code):
+        #pattern = r"\\usepackage\{([a-zA-Z0-9\-,]*)\}" # old version, without MULTILINE
+        pattern = r"^[^%]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+        for match_obj in re.finditer(pattern, tex_code, re.MULTILINE):
+            print match_obj.group()
             package_list = package_list + match_obj.group(1).split(",")
     return package_list
 
@@ -47,14 +49,14 @@ def count_areas(article_id_list):
     return counter.most_common()
 
 if __name__ == '__main__':
-    max_id = 1000
+    max_id = 10
     # for i in range(1, max_id+1):
     #     article_id = "1701.%05d" % i
     #     print article_id, get_subject_area(article_id), get_packages(article_id)
     # print "-------------"
     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
     #print count_packages(article_id_list, field_list=None)
-    for package, count in count_packages(article_id_list, field_list=["math"]):
+    for package, count in count_packages(article_id_list, field_list=None):
         print package, count
     print "-------------"
     for area, count in count_areas(article_id_list):
