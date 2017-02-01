@@ -51,6 +51,7 @@ if __name__ == '__main__':
     # for i in range(1, max_id+1):
     #     article_id = "1701.%05d" % i
     #     print article_id, get_subject_area(article_id), get_packages(article_id)
+    # print "-------------"
     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
     #print count_packages(article_id_list, field_list=None)
     for package, count in count_packages(article_id_list, field_list=["math"]):
