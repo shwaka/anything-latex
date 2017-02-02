@@ -56,8 +56,11 @@ if __name__ == '__main__':
     # print "-------------"
     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
     #print count_packages(article_id_list, field_list=None)
-    for package, count in count_packages(article_id_list, field_list=None):
+    total_count = 0
+    for package, count in count_packages(article_id_list, field_list=["math"]):
         print package, count
+        total_count += count
+    print "total_count: %d" % total_count
     print "-------------"
     for area, count in count_areas(article_id_list):
         print area, count
