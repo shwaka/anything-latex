@@ -8,24 +8,35 @@
   '("definition" "theorem" "proposition" "lemma" "corollary" "example" "remark")
   "theorem list")
 
-;;; (makunbound 'al-default-environment-list)
 (defvar al-default-environment-list
   '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof" "abstract"))
 
-;; (defvar al-texmf-dirs-user
-;;   (list (concat (getenv "HOME") "/texmf"))
-;;   "user-local texmf directories")
-
-;;; (makunbound 'al-texmf-dirs)
 (defvar al-texmf-dirs
   (split-string
    (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | perl -pe \"s/\\n//\"")
    ":" t)
   "list of texmf directories")
 
+;;; TODO: remove full path
+(defvar al-used-packages-file
+  "~/Git/anything-latex/anything-latex-used-packages"
+  "file containing a list of frequently used packages")
+
 (defvar al-shell-command-list-files
-  "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
+  ;; "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
+  (format "find %s \\( -name fonts -prune \\) -or \\( -type f -printf \"%%f\n\" \\)"
+	  (apply 'concat (mapcar
+			  #'(lambda (s) (concat s " "))
+			  al-texmf-dirs)))
   "command to list files in texmf directories")
+
+(defun al-get-files-list ()
+  (concat
+   (with-temp-buffer
+     (insert-file-contents al-used-packages-file)
+     (buffer-substring-no-properties (point-min) (point-max)))
+   "\n"
+   (shell-command-to-string al-shell-command-list-files)))
 
 ;;; functions
 

@@ -49,7 +49,9 @@
 (defvar anything-c-source-latex-files
   '((name . "LaTeX Files (candidates in buffer)")
     (init . (lambda () (with-current-buffer (anything-candidate-buffer 'global)
-			 (shell-command al-shell-command-list-files t))))
+			 ;; (shell-command al-shell-command-list-files t)
+			 (insert (al-get-files-list))
+			 )))
     (candidates-in-buffer)
     (action . al-insert-package-path)))
 
