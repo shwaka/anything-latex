@@ -114,3 +114,7 @@ blindtext.sty
 centernot.sty
 pst-grad.sty
 placeins.sty
+
+amsart.cls
+article.cls
+jsarticle.cls

@@ -45,7 +45,7 @@
 	      (wait-option . t)))
     ("sty" . ((ctrl-seq . "usepackage")
 	      (wait-option . t)))
-    ("bib" . ((ctrl-seq . "references")
+    ("bib" . ((ctrl-seq . "bibliography")
 	      (wait-option nil)))
     ("bst" . ((ctrl-seq . "bibliographystyle")
 	      (wait-option nil)))
@@ -281,6 +281,7 @@
 ;;   (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
 ;;   (al-wait-option))
 
+;;; TODO: \usepackage{amsmath,amsthm,amssymb}
 (defun al-insert-file (filename)
   "insert something"
   (al-save-data (delete-dups (cons filename (al-load-data al-files-history-path t)))
