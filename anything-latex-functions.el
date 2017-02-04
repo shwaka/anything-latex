@@ -18,13 +18,19 @@
   "list of texmf directories")
 
 ;;; TODO: remove full path
-(defvar al-used-packages-file
-  "~/Git/anything-latex/anything-latex-used-packages"
-  "file containing a list of frequently used packages")
+;; (defvar al-used-packages-file
+;;   "~/Git/anything-latex/anything-latex-used-packages"
+;;   "file containing a list of frequently used packages")
+(defvar al-popular-files-path
+  "~/Git/anything-latex/anything-latex-popular-files"
+  "file containing a list of frequently used latex files")
 
-(defvar al-package-history-file
-  "~/.emacs.d/anything-latex-package-history"
-  "file to save history of \\usepackage")
+;; (defvar al-package-history-file
+;;   "~/.emacs.d/anything-latex-package-history"
+;;   "file to save history of \\usepackage")
+(defvar al-files-history-path
+  "~/.emacs.d/anything-latex-files-history"
+  "file to save history of latex files")
 
 (defvar al-shell-command-list-files
   ;; "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
@@ -33,6 +39,17 @@
 			  #'(lambda (s) (concat s " "))
 			  al-texmf-dirs)))
   "command to list files in texmf directories")
+
+(defvar al-insert-ctrl-seq-alist
+  '(("cls" . ((ctrl-seq . "documentclass")
+	      (wait-option . t)))
+    ("sty" . ((ctrl-seq . "usepackage")
+	      (wait-option . t)))
+    ("bib" . ((ctrl-seq . "references")
+	      (wait-option nil)))
+    ("bst" . ((ctrl-seq . "bibliographystyle")
+	      (wait-option nil)))
+    ))
 
 ;;; functions
 (defun al-save-data (data filename)
@@ -46,15 +63,19 @@
     (insert-file-contents filename)
     (read (current-buffer)))))
 
+;;; TODO: current directory, beamer
 (defun al-get-files-list ()
   (concat
+   ;; from history
    (apply 'concat (mapcar
 		   #'(lambda (s) (concat s "\n"))
-		   (al-load-data al-package-history-file t)))
+		   (al-load-data al-files-history-path t)))
+   ;; from popular files
    (with-temp-buffer
-     (insert-file-contents al-used-packages-file)
+     (insert-file-contents al-popular-files-path)
      (buffer-substring-no-properties (point-min) (point-max)))
    "\n"
+   ;; all files
    (shell-command-to-string al-shell-command-list-files)))
 
 ;;; functions
@@ -235,6 +256,9 @@
   (when option
     (insert option)))
 
+(defun al-wait-option ()
+  (add-hook 'pre-command-hook 'al-check-option))
+
 (defun al-check-option ()
   (when (equal ?\[ last-command-event)
     (setq this-command 'al-insert-option-to-previous-ctrl-seq))
@@ -250,12 +274,25 @@
 ;;   ;; (insert "\\ref{" label "}")
 ;;   (al-insert-ctrl-seq "ref" label))
 
-(defun al-insert-package (package)
-  "insert \\usepackage{package}"
-  (al-save-data (remove-duplicates (cons package (al-load-data al-package-history-file t)))
-		al-package-history-file)
-  (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
-  (add-hook 'pre-command-hook 'al-check-option))
+;; (defun al-insert-package (package)
+;;   "insert \\usepackage{package}"
+;;   (al-save-data (delete-dups (cons package (al-load-data al-package-history-file t)))
+;; 		al-package-history-file)
+;;   (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
+;;   (al-wait-option))
+
+(defun al-insert-file (filename)
+  "insert something"
+  (al-save-data (delete-dups (cons filename (al-load-data al-files-history-path t)))
+		al-files-history-path)
+  (let* ((basename (file-name-sans-extension filename))
+	 (ext (file-name-extension filename))
+	 (insert-option-alist (assoc-default ext al-insert-ctrl-seq-alist))
+	 (ctrl-seq (assoc-default 'ctrl-seq insert-option-alist))
+	 (wait-option (assoc-default 'wait-option insert-option-alist)))
+    (al-insert-ctrl-seq ctrl-seq basename)
+    (when wait-option
+      (al-wait-option))))
 
 ;; (defun al-insert-package-path (package-path)
 ;;   (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
@@ -265,7 +302,7 @@
   (interactive "sLabel: ")
   ;; (insert "\\cite{" bibkey "}")
   (al-insert-ctrl-seq "cite" bibkey)
-  (add-hook 'pre-command-hook 'al-check-option))
+  (al-wait-option))
 
 (defun al-insert-environment-func (envname &optional not-increase-indent)
   (let ((indent-base (make-string (current-column) ?\ ))
