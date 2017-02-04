@@ -22,16 +22,35 @@
   "~/Git/anything-latex/anything-latex-used-packages"
   "file containing a list of frequently used packages")
 
+(defvar al-package-history-file
+  "~/.emacs.d/anything-latex-package-history"
+  "file to save history of \\usepackage")
+
 (defvar al-shell-command-list-files
   ;; "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
-  (format "find %s \\( -name fonts -prune \\) -or \\( -type f -printf \"%%f\n\" \\)"
+  (format "find %s \\( -name fonts -prune \\) -or \\( -xtype f -printf \"%%f\n\" \\)"
 	  (apply 'concat (mapcar
 			  #'(lambda (s) (concat s " "))
 			  al-texmf-dirs)))
   "command to list files in texmf directories")
 
+;;; functions
+(defun al-save-data (data filename)
+  (let ((str (format "%S" data)))
+    (write-region str nil filename nil 'silent)))
+
+(defun al-load-data (filename &optional noerror)
+  (when (or (not noerror)
+	    (file-exists-p filename))
+    (with-temp-buffer
+    (insert-file-contents filename)
+    (read (current-buffer)))))
+
 (defun al-get-files-list ()
   (concat
+   (apply 'concat (mapcar
+		   #'(lambda (s) (concat s "\n"))
+		   (al-load-data al-package-history-file t)))
    (with-temp-buffer
      (insert-file-contents al-used-packages-file)
      (buffer-substring-no-properties (point-min) (point-max)))
@@ -233,11 +252,13 @@
 
 (defun al-insert-package (package)
   "insert \\usepackage{package}"
-  (al-insert-ctrl-seq "usepackage" package)
+  (al-save-data (remove-duplicates (cons package (al-load-data al-package-history-file t)))
+		al-package-history-file)
+  (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
   (add-hook 'pre-command-hook 'al-check-option))
 
-(defun al-insert-package-path (package-path)
-  (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
+;; (defun al-insert-package-path (package-path)
+;;   (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
 
 (defun al-insert-cite (bibkey)
   "insert \\cite{label}"

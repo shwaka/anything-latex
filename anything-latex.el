@@ -53,7 +53,7 @@
 			 (insert (al-get-files-list))
 			 )))
     (candidates-in-buffer)
-    (action . al-insert-package-path)))
+    (action . al-insert-package)))
 
 (defvar anything-c-source-latex-commands
   '((name . "LaTeX Commands")
