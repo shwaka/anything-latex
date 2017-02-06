@@ -9,7 +9,7 @@
   "theorem list")
 
 (defvar al-default-environment-list
-  '("document" "itemize" "enumerate" "math" "equation" "eqnarray" "frame" "cases" "array" "proof" "abstract" "quote" "quotation"))
+  '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft"))
 
 (defvar al-texmf-dirs
   (split-string
