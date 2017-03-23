@@ -154,6 +154,16 @@
 	  (add-to-list 'theorem-list (match-string 1)))
 	(reverse theorem-list)))))
 
+(defun al-search-environment (buffer)
+  (let ((environment-pattern "\\\\newenvironment{\\([a-zA-Z]*\\)}")
+	(environment-list ()))
+    (with-current-buffer buffer
+      (save-excursion
+	(goto-char (point-min))
+	(while (re-search-forward environment-pattern nil t)
+	  (add-to-list 'environment-list (match-string 1)))
+	(reverse environment-list)))))
+
 (defun al-use-cleveref-p (buffer)
   (let ((cleveref-pattern "^[^%]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
 	(use-cleveref nil))
@@ -206,6 +216,10 @@
   (setq al-user-theorem-list (al-search-theorem buffer))
   (setq al-theorem-list (append al-user-theorem-list al-default-theorem-list)))
 
+(defun al-environment-init (buffer)
+  (setq al-user-environment-list (al-search-environment buffer))
+  (setq al-environment-list (append al-user-environment-list al-default-environment-list)))
+
 (defun al-bibkey-init (buffer)
   (setq al-bib-file (al-find-bib-file buffer)))
 
@@ -213,6 +227,7 @@
   (al-label-init buffer)
   (al-bibkey-init buffer)
   (al-set-config buffer)
+  (al-environment-init buffer)
   (let ((reftype (cdr (assq 'reftype al-config-alist))))
     (if reftype
 	(setq al-reftype reftype)

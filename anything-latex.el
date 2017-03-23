@@ -36,7 +36,7 @@
 
 (defvar anything-c-source-latex-environments
   '((name . "Environments")
-    (candidates . al-default-environment-list)
+    (candidates . al-environment-list)
     (action ("Insert" . al-insert-environment))))
 
 ;; (defvar anything-c-source-latex-files-candidates-list
