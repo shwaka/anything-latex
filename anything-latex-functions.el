@@ -320,12 +320,15 @@
   (al-insert-ctrl-seq "cite" bibkey)
   (al-wait-option))
 
-(defun al-insert-environment-func (envname &optional not-increase-indent)
+(defun al-insert-environment-func (envname &optional not-increase-indent itemize-like)
   (let ((indent-base (make-string (current-column) ?\ ))
-	(indent-increase "  "))
+	(indent-increase "  ")
+	(default-text ""))
     (when not-increase-indent
       (setq indent-increase ""))
-    (insert (format "\\begin{%s}\n%s%s\n%s\\end{%s}" envname indent-base indent-increase indent-base envname))
+    (when itemize-like
+      (setq default-text "\\item "))
+    (insert (format "\\begin{%s}\n%s%s%s\n%s\\end{%s}" envname indent-base indent-increase default-text indent-base envname))
     (forward-line -1)
     (end-of-line)
     ;; (re-search-backward "\\\\end{" nil t)
@@ -333,10 +336,14 @@
     ))
 
 (defun al-insert-environment (envname)
-  (let (not-increase-indent)
+  (let (not-increase-indent
+	itemize-like)
     (when (member envname '("document"))
       (setq not-increase-indent t))
-    (al-insert-environment-func envname not-increase-indent)))
+    (when (member envname '("itemize" "enumerate"))
+      (setq not-increase-indent t)
+      (setq itemize-like t))
+    (al-insert-environment-func envname not-increase-indent itemize-like)))
 
 ;;; persistent-action
 (defun al-show-persistent (string)
