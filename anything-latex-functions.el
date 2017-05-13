@@ -145,7 +145,8 @@
 	  	     0 -1))))))
 
 (defun al-search-theorem (buffer)
-  (let ((theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
+  (let (;; (theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
+	(theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([^}\\n]*\\)}")
 	(theorem-list ()))
     (with-current-buffer buffer
       (save-excursion
