@@ -9,7 +9,8 @@
   "theorem list")
 
 (defvar al-default-environment-list
-  '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft" "block" "exampleblock" "alertblock" "picture" "figure" "align" "align*" "lstlisting"))
+  '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft" "block" "exampleblock" "alertblock" "picture" "figure" "align" "align*" "lstlisting" "table" "tabular" "extable"))
+                                        ;extable: temporary added
 
 (defvar al-texmf-dirs
   (split-string
