@@ -427,7 +427,10 @@
 	 (shell-command "latexmk -C")
 	 (message "latexmk -C"))
 	((equal command "view")
-	 (TeX-command "View" 'TeX-master-file nil))
+	 ;; (TeX-command "View" 'TeX-master-file nil)
+         ;; https://stackoverflow.com/questions/13901955/how-to-avoid-pop-up-of-async-shell-command-buffer-in-emacs
+         (call-process-shell-command (concat "evince " (TeX-master-file) ".pdf") nil 0)
+         )
 	))
 
 ;;; compile
