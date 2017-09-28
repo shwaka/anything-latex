@@ -28,45 +28,53 @@ def get_data_from_texfile(article_id, pattern):
             data_list = data_list + match_obj.group(1).split(",")
     return data_list
 
-def get_packages(article_id):
-    pattern = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
-    return get_data_from_texfile(article_id, pattern)
-    # article_dir = sources_directory + "/" + article_id
-    # files_of_article = os.listdir(article_dir)
-    # package_list = []
-    # for texfile_name in filter(lambda s: re.search(r"\.tex$", s), files_of_article):
-    #     f = open(article_dir + "/" + texfile_name)
-    #     tex_code = f.read()
-    #     f.close()
-    #     #pattern = r"\\usepackage\{([a-zA-Z0-9\-,]*)\}" # old version, without MULTILINE
-    #     pattern = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
-    #     for match_obj in re.finditer(pattern, tex_code, re.MULTILINE):
-    #         #print match_obj.group()
-    #         package_list = package_list + match_obj.group(1).split(",")
-    # return package_list
+# def get_packages(article_id):
+#     pattern = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+#     return get_data_from_texfile(article_id, pattern)
+#     # article_dir = sources_directory + "/" + article_id
+#     # files_of_article = os.listdir(article_dir)
+#     # package_list = []
+#     # for texfile_name in filter(lambda s: re.search(r"\.tex$", s), files_of_article):
+#     #     f = open(article_dir + "/" + texfile_name)
+#     #     tex_code = f.read()
+#     #     f.close()
+#     #     #pattern = r"\\usepackage\{([a-zA-Z0-9\-,]*)\}" # old version, without MULTILINE
+#     #     pattern = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+#     #     for match_obj in re.finditer(pattern, tex_code, re.MULTILINE):
+#     #         #print match_obj.group()
+#     #         package_list = package_list + match_obj.group(1).split(",")
+#     # return package_list
 
-def get_documentclass(article_id):
-    pattern = r"^[^%\n]*\\documentclass(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
-    return get_data_from_texfile(article_id, pattern)
+# def get_documentclass(article_id):
+#     pattern = r"^[^%\n]*\\documentclass(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+#     return get_data_from_texfile(article_id, pattern)
 
-def count_packages(article_id_list, field_list=None):
-    # field_list=None => all fields
-    # field_list=["math", "cs"] => count only in math and cs
-    package_list = []
+# def count_packages(article_id_list, field_list=None):
+#     # field_list=None => all fields
+#     # field_list=["math", "cs"] => count only in math and cs
+#     package_list = []
+#     for article_id in article_id_list:
+#         if (field_list is None) or (get_subject_area(article_id)[0] in field_list):
+#             package_list = package_list + get_packages(article_id)
+#     counter = Counter(package_list)
+#     return counter.most_common()
+
+# def count_documentclass(article_id_list, field_list=None):
+#     # field_list=None => all fields
+#     # field_list=["math", "cs"] => count only in math and cs
+#     documentclass_list = []
+#     for article_id in article_id_list:
+#         if (field_list is None) or (get_subject_area(article_id)[0] in field_list):
+#             documentclass_list = documentclass_list + get_documentclass(article_id)
+#     counter = Counter(documentclass_list)
+#     return counter.most_common()
+
+def count_data(article_id_list, pattern, field_list=None):
+    data_list = []
     for article_id in article_id_list:
         if (field_list is None) or (get_subject_area(article_id)[0] in field_list):
-            package_list = package_list + get_packages(article_id)
-    counter = Counter(package_list)
-    return counter.most_common()
-
-def count_documentclass(article_id_list, field_list=None):
-    # field_list=None => all fields
-    # field_list=["math", "cs"] => count only in math and cs
-    documentclass_list = []
-    for article_id in article_id_list:
-        if (field_list is None) or (get_subject_area(article_id)[0] in field_list):
-            documentclass_list = documentclass_list + get_documentclass(article_id)
-    counter = Counter(documentclass_list)
+            data_list = data_list + get_data_from_texfile(article_id, pattern)
+    counter = Counter(data_list)
     return counter.most_common()
 
 def count_areas(article_id_list):
@@ -76,24 +84,56 @@ def count_areas(article_id_list):
     counter = Counter(area_list)
     return counter.most_common()
 
+# if __name__ == '__main__':
+# if False:
+#     max_id = 1000
+#     # for i in range(1, max_id+1):
+#     #     article_id = "1701.%05d" % i
+#     #     print article_id, get_subject_area(article_id), get_packages(article_id)
+#     # print "-------------"
+#     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
+#     field_list = None
+#     field_list = ["math"]
+#     #print count_packages(article_id_list, field_list=None)
+#     total_count = 0
+#     for package, count in count_packages(article_id_list, field_list=field_list):
+#         print package, count
+#         total_count += count
+#     print "total_count: %d" % total_count
+#     print "-------------"
+#     for documentclass, count in count_documentclass(article_id_list, field_list=field_list):
+#         print documentclass, count
+#     print "-------------"
+#     for area, count in count_areas(article_id_list):
+#         print area, count
+
 if __name__ == '__main__':
+    package_regexp       = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+    documentclass_regexp = r"^[^%\n]*\\documentclass(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
+    environment_regexp   = r"\\end\{([a-zA-Z0-9\-,*]*)\}"
+
     max_id = 1000
-    # for i in range(1, max_id+1):
-    #     article_id = "1701.%05d" % i
-    #     print article_id, get_subject_area(article_id), get_packages(article_id)
-    # print "-------------"
     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
     field_list = None
     field_list = ["math"]
-    #print count_packages(article_id_list, field_list=None)
+
     total_count = 0
-    for package, count in count_packages(article_id_list, field_list=field_list):
+    for package, count in count_data(article_id_list, package_regexp, field_list=field_list):
         print package, count
         total_count += count
     print "total_count: %d" % total_count
     print "-------------"
-    for documentclass, count in count_documentclass(article_id_list, field_list=field_list):
+
+    total_count = 0
+    for environment, count in count_data(article_id_list, environment_regexp, field_list=field_list):
+        print environment, count
+        total_count += count
+    print "total_count: %d" % total_count
+    print "-------------"
+
+    for documentclass, count in count_data(article_id_list, documentclass_regexp, field_list=field_list):
         print documentclass, count
     print "-------------"
+
     for area, count in count_areas(article_id_list):
         print area, count
