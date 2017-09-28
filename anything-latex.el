@@ -50,7 +50,7 @@
   '((name . "LaTeX Files (candidates in buffer)")
     (init . (lambda () (with-current-buffer (anything-candidate-buffer 'global)
 			 ;; (shell-command al-shell-command-list-files t)
-			 (insert (al-get-files-list))
+			 (insert (al-get-files-list-string))
 			 )))
     (candidates-in-buffer)
     (action . al-insert-file)))

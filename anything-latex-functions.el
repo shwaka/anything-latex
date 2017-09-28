@@ -1,5 +1,5 @@
 ;;; This elisp file is independent of anything.el.
-;;; Hence you can use this not only in anything.el but also other interface.
+;;; Hence you can use this not only in anything.el but also in another interface.
 
 (require 'em-glob)
 
@@ -8,9 +8,9 @@
   '("definition" "theorem" "proposition" "lemma" "corollary" "example" "remark")
   "theorem list")
 
-(defvar al-default-environment-list
-  '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft" "block" "exampleblock" "alertblock" "picture" "figure" "align" "align*" "lstlisting" "table" "tabular" "extable"))
-                                        ;extable: temporary added
+;; (defvar al-default-environment-list
+;;   '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft" "block" "exampleblock" "alertblock" "picture" "figure" "align" "align*" "lstlisting" "table" "tabular" "extable"))
+;;                                         ;extable: temporary added
 
 (defvar al-texmf-dirs
   (split-string
@@ -25,12 +25,19 @@
 (defvar al-popular-files-path
   "~/Git/anything-latex/anything-latex-popular-files"
   "file containing a list of frequently used latex files")
+(defvar al-popular-environments-path
+  "~/Git/anything-latex/anything-latex-popular-environments"
+  "file containing a list of frequently used latex files")
 
 ;; (defvar al-package-history-file
 ;;   "~/.emacs.d/anything-latex-package-history"
 ;;   "file to save history of \\usepackage")
 (defvar al-files-history-path
   "~/.emacs.d/anything-latex-files-history"
+  "file to save history of latex files")
+
+(defvar al-environments-history-path
+  "~/.emacs.d/anything-latex-environments-history"
   "file to save history of latex files")
 
 (defvar al-shell-command-list-files
@@ -64,8 +71,12 @@
     (insert-file-contents filename)
     (read (current-buffer)))))
 
+(defun al-add-data (data-elem filename)
+  (al-save-data (delete-dups (cons data-elem (al-load-data filename t)))
+                filename))
+
 ;;; TODO: current directory, beamer
-(defun al-get-files-list ()
+(defun al-get-files-list-string ()
   (concat
    ;; from history
    (apply 'concat (mapcar
@@ -78,6 +89,20 @@
    "\n"
    ;; all files
    (shell-command-to-string al-shell-command-list-files)))
+
+(defun al-get-environment-list ()
+  (delete-dups
+   (append
+    (al-load-data al-environments-history-path t)
+    ;; (apply 'concat (mapcar
+    ;;                 #'(lambda (s) (concat s "\n"))
+    ;;                 al-default-environment-list))
+    ;; al-default-environment-list
+    (with-temp-buffer
+      (insert-file-contents al-popular-environments-path)
+      (split-string (buffer-string) "\n" t))
+    )))
+
 
 ;;; functions
 
@@ -220,7 +245,7 @@
 
 (defun al-environment-init (buffer)
   (setq al-user-environment-list (al-search-environment buffer))
-  (setq al-environment-list (append al-user-environment-list al-default-environment-list)))
+  (setq al-environment-list (append al-user-environment-list (al-get-environment-list))))
 
 (defun al-bibkey-init (buffer)
   (setq al-bib-file (al-find-bib-file buffer)))
@@ -301,8 +326,9 @@
 ;;; TODO: \usepackage{amsmath,amsthm,amssymb}
 (defun al-insert-file (filename)
   "insert something"
-  (al-save-data (delete-dups (cons filename (al-load-data al-files-history-path t)))
-		al-files-history-path)
+  ;; (al-save-data (delete-dups (cons filename (al-load-data al-files-history-path t)))
+  ;;       	al-files-history-path)
+  (al-add-data filename al-files-history-path)
   (let* ((basename (file-name-sans-extension filename))
 	 (ext (file-name-extension filename))
 	 (insert-option-alist (assoc-default ext al-insert-ctrl-seq-alist))
@@ -341,6 +367,7 @@
     ))
 
 (defun al-insert-environment (envname)
+  (al-add-data envname al-environments-history-path)
   (let ((indent-increase t)
 	(itemize-like nil))
     (when (member envname '("document"))
