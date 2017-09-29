@@ -48,6 +48,7 @@ if __name__ == '__main__':
     package_regexp       = r"^[^%\n]*\\usepackage(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
     documentclass_regexp = r"^[^%\n]*\\documentclass(?:\[[^\]]*\])?\{([a-zA-Z0-9\-,]*)\}"
     environment_regexp   = r"\\end\{([a-zA-Z0-9\-,*]*)\}"
+    newtheorem_regexp    = r"\\newtheorem{([a-zA-Z]*)}(?:\[[a-zA-Z]*\])?\{([^}\n]*)\}"
 
     max_id = 1000
     article_id_list = map(lambda i: "1701.%05d" % i, list(range(1,max_id+1)))
@@ -55,6 +56,7 @@ if __name__ == '__main__':
     field_list = ["math"]
 
     total_count = 0
+    print "---package---"
     for package, count in count_data(article_id_list, package_regexp, field_list=field_list):
         print package, count
         total_count += count
@@ -62,12 +64,20 @@ if __name__ == '__main__':
     print "-------------"
 
     total_count = 0
+    print "---environment---"
     for environment, count in count_data(article_id_list, environment_regexp, field_list=field_list):
         print environment, count
         total_count += count
     print "total_count: %d" % total_count
     print "-------------"
+    print "---theorem---"
+    for theorem, count in count_data(article_id_list, newtheorem_regexp, field_list=field_list):
+        print theorem, count
+        total_count += count
+    print "total_count: %d" % total_count
+    print "-------------"
 
+    print "---documentclass---"
     for documentclass, count in count_data(article_id_list, documentclass_regexp, field_list=field_list):
         print documentclass, count
     print "-------------"
