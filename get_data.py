@@ -39,8 +39,9 @@ def count_data(article_id_list, pattern, field_list=None, exclude_pattern_list=N
                     data_to_exclude = get_data_from_texfile(article_id, exclude_pattern)
                     for exc in data_to_exclude:
                         data_list_temp = filter(lambda d: d!=exc, data_list_temp)
-            if "prop" in data_list_temp:
-                print article_id
+            # if "document" not in data_list_temp:
+            #     print article_id
+            data_list_temp = list(set(data_list_temp)) # remove duplicates
             data_list = data_list + data_list_temp
     counter = Counter(data_list)
     return counter.most_common()
@@ -52,14 +53,15 @@ def count_areas(article_id_list):
     counter = Counter(area_list)
     return counter.most_common()
 
-def print_count(article_id_list, pattern, field_list=None, exclude_pattern_list=None, name=""):
+def print_count(article_id_list, pattern, field_list=None, exclude_pattern_list=None, name="", suffix=""):
     total_count = 0
     print "\n-----%s-----" % name
     output = ""
     for data, count in count_data(article_id_list, pattern,
                                   field_list=field_list, exclude_pattern_list=exclude_pattern_list):
         # print data, count
-        output += "%s(%s) " % (data, str(count))
+        # output += "%s(%d) " % (data, count)
+        output += "%s\n" % (data+suffix)
         total_count += count
     print "total_count: %d" % total_count
     print output
@@ -76,8 +78,8 @@ def main():
     field_list = None
     field_list = ["math"]
 
-    print_count(article_id_list, documentclass_regexp, field_list, name="documentclass")
-    print_count(article_id_list, package_regexp, field_list, name="package")
+    print_count(article_id_list, documentclass_regexp, field_list, name="documentclass", suffix=".cls")
+    print_count(article_id_list, package_regexp, field_list, name="package", suffix=".sty")
     print_count(article_id_list, environment_regexp, field_list,
                 exclude_pattern_list=[newenvironment_regexp, newtheorem_regexp], name="environment")
 

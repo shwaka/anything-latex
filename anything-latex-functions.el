@@ -12,6 +12,14 @@
 ;;   '("document" "itemize" "enumerate" "math" "equation*" "equation" "eqnarray*" "eqnarray" "frame" "cases" "cases*" "array" "proof" "abstract" "quote" "quotation" "minipage" "center" "flushright" "flushleft" "block" "exampleblock" "alertblock" "picture" "figure" "align" "align*" "lstlisting" "table" "tabular" "extable"))
 ;;                                         ;extable: temporary added
 
+(defvar al-additional-theorem-list
+  '()
+  "theorem list added by a user")
+
+(defvar al-additional-environment-list
+  '()
+  "environment list added by a user")
+
 (defvar al-texmf-dirs
   (split-string
    (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | perl -pe \"s/\\n//\"")
@@ -93,7 +101,7 @@
 (defun al-get-environment-list ()
   (delete-dups
    (append
-    (al-load-data al-environments-history-path t)
+    ;; (al-load-data al-environments-history-path t)
     ;; (apply 'concat (mapcar
     ;;                 #'(lambda (s) (concat s "\n"))
     ;;                 al-default-environment-list))
@@ -241,11 +249,13 @@
 (defun al-label-init (buffer)
   (setq al-use-cleveref (al-use-cleveref-p buffer))
   (setq al-user-theorem-list (al-search-theorem buffer))
-  (setq al-theorem-list (append al-user-theorem-list al-default-theorem-list)))
+  (setq al-theorem-list (append al-user-theorem-list al-additional-theorem-list al-default-theorem-list)))
 
 (defun al-environment-init (buffer)
   (setq al-user-environment-list (al-search-environment buffer))
-  (setq al-environment-list (append al-user-environment-list (al-get-environment-list))))
+  (setq al-environment-list (delete-dups (append (al-load-data al-environments-history-path t)
+                                                 al-user-environment-list al-additional-environment-list
+                                                 (al-get-environment-list)))))
 
 (defun al-bibkey-init (buffer)
   (setq al-bib-file (al-find-bib-file buffer)))
@@ -366,8 +376,9 @@
     ;; (backward-char)
     ))
 
-(defun al-insert-environment (envname)
-  (al-add-data envname al-environments-history-path)
+(defun al-insert-environment (envname save-history)
+  (when save-history
+    (al-add-data envname al-environments-history-path))
   (let ((indent-increase t)
 	(itemize-like nil))
     (when (member envname '("document"))
@@ -376,6 +387,12 @@
       (setq indent-increase t)
       (setq itemize-like t))
     (al-insert-environment-func envname indent-increase itemize-like)))
+
+(defun al-insert-environment-save (envname)
+  (al-insert-environment envname t))
+
+(defun al-insert-environment-notsave (envname)
+  (al-insert-environment envname nil))
 
 ;;; persistent-action
 (defun al-show-persistent (string)

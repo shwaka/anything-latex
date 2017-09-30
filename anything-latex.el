@@ -32,12 +32,12 @@
 (defvar anything-c-source-latex-theorems
   '((name . "Theorems")
     (candidates . anything-c-latex-get-theorems)
-    (action ("Insert" . al-insert-environment))))
+    (action ("Insert" . al-insert-environment-notsave))))
 
 (defvar anything-c-source-latex-environments
   '((name . "Environments")
     (candidates . al-environment-list)
-    (action ("Insert" . al-insert-environment))))
+    (action ("Insert" . al-insert-environment-save))))
 
 ;; (defvar anything-c-source-latex-files-candidates-list
 ;;   '((name . "LaTeX Files")
@@ -65,13 +65,13 @@
   (interactive)
   (al-init (current-buffer))
   (anything-other-buffer '(anything-c-source-latex-commands
-			   ;; anything-c-source-latex-files
-			   anything-c-source-latex-environments
-			   anything-c-source-latex-theorems
-			   anything-c-source-latex-bibkeys
-			   anything-c-source-latex-labels
-			   anything-c-source-latex-files
-			   )
-			 "*anything for latex*"))
+                           ;; anything-c-source-latex-files
+                           anything-c-source-latex-theorems
+                           anything-c-source-latex-environments
+                           anything-c-source-latex-bibkeys
+                           anything-c-source-latex-labels
+                           anything-c-source-latex-files
+                           )
+                         "*anything for latex*"))
 
 (provide 'anything-latex)
