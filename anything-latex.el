@@ -20,7 +20,9 @@
 	    ("Jump" . al-jump-label)
 	    ("Insert \\ref" . (lambda (label) (al-insert-ctrl-seq "ref" label)))
 	    ("Insert \\cref" . (lambda (label) (al-insert-ctrl-seq "cref" label)))
-	    ("Insert \\Cref" . (lambda (label) (al-insert-ctrl-seq "Cref" label))))
+	    ("Insert \\Cref" . (lambda (label) (al-insert-ctrl-seq "Cref" label)))
+            ("Insert \\namecref" . (lambda (label) (al-insert-ctrl-seq "namecref" label)))
+            ("Insert \\lcnamecref" . (lambda (label) (al-insert-ctrl-seq "lcnamecref" label))))
     (persistent-action . al-show-persistent-label)))
 
 (defvar anything-c-source-latex-bibkeys
