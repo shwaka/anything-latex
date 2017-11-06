@@ -475,6 +475,8 @@
          ;; https://stackoverflow.com/questions/13901955/how-to-avoid-pop-up-of-async-shell-command-buffer-in-emacs
          (call-process-shell-command (concat "evince " (TeX-master-file) ".pdf") nil 0)
          )
+        ((equal command "forward search (synctex)")
+         (my-fwdevince))
 	))
 
 ;;; compile
