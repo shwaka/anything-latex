@@ -476,7 +476,7 @@
          (call-process-shell-command (concat "evince " (TeX-master-file) ".pdf") nil 0)
          )
         ((equal command "forward search (synctex)")
-         (my-fwdevince))
+         (TeX-command "Fwdevince" 'TeX-master-file))
 	))
 
 ;;; compile
