@@ -200,7 +200,7 @@
 	(reverse environment-list)))))
 
 (defun al-use-cleveref-p (buffer)
-  (let ((cleveref-pattern "^[^%]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
+  (let ((cleveref-pattern "^[^%\n]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
 	(use-cleveref nil))
     (with-current-buffer buffer
       (save-excursion
