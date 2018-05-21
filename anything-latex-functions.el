@@ -462,8 +462,11 @@
 ;;; This is dependent on auctex, latexmk, auctex-latexmk
 (defun al-execute-command (command)
   (cond ((equal command "latexmk")
-	 (TeX-save-document (TeX-master-file))
-	 (TeX-command "LatexMk" 'TeX-master-file nil))
+         (if (not (equal "tex" (file-name-extension (buffer-file-name))))
+             (message (concat (propertize "Error:" 'face '(:foreground "orange"))
+                              " NOT in .tex file"))
+           (TeX-save-document (TeX-master-file))
+           (TeX-command "LatexMk" 'TeX-master-file nil)))
 	((equal command "latexmk clean")
 	 (shell-command "latexmk -c")
 	 (message "latexmk -c"))
