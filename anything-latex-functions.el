@@ -458,6 +458,17 @@
       (setq actions '(("Insert ref" . (lambda (label) (al-insert-ctrl-seq "ref" label))))))
     actions))
 
+
+(defvar al-after-latexmk-command
+  nil
+  "Command run after latexmk.
+Evaluated in the following way:
+(let ((al-master-file (TeX-master-file)))
+  (call-process-shell-command (eval al-after-latexmk-command)
+                              nil 0))
+")
+
+
 ;;; compile commands
 ;;; This is dependent on auctex, latexmk, auctex-latexmk
 (defun al-execute-command (command)
@@ -465,8 +476,14 @@
          (if (not (equal "tex" (file-name-extension (buffer-file-name))))
              (message (concat (propertize "Error:" 'face '(:foreground "orange"))
                               " NOT in .tex file"))
-           (TeX-save-document (TeX-master-file))
-           (TeX-command "LatexMk" 'TeX-master-file nil)))
+           (let ((al-master-file (TeX-master-file)))
+                                        ; `TeX-master-file'を `TeX-command'の後に実行すると<none>になる
+             (TeX-save-document (TeX-master-file))
+             (TeX-command "LatexMk" 'TeX-master-file nil)
+             ;; (call-process-shell-command (format "latexmk-dropbox -notypeset %s.tex &" al-master-file)
+             ;;                             nil 0)
+             (call-process-shell-command (eval al-after-latexmk-command)
+                                         nil 0))))
 	((equal command "latexmk clean")
 	 (shell-command "latexmk -c")
 	 (message "latexmk -c"))
@@ -479,8 +496,7 @@
          (call-process-shell-command (concat "evince " (TeX-master-file) ".pdf") nil 0)
          )
         ((equal command "forward search (synctex)")
-         (TeX-command "Fwdevince" 'TeX-master-file))
-	))
+         (TeX-command "Fwdevince" 'TeX-master-file))))
 
 ;;; compile
 ;; (defvar al-compile-command
