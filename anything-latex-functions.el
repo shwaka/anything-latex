@@ -22,7 +22,7 @@
 
 (defvar al-texmf-dirs
   (split-string
-   (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | perl -pe \"s/\\n//\"")
+   (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
    ":" t)
   "list of texmf directories")
 
