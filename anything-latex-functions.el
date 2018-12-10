@@ -35,7 +35,7 @@
   "file containing a list of frequently used latex files")
 (defvar al-popular-environments-path
   "~/Git/anything-latex/anything-latex-popular-environments"
-  "file containing a list of frequently used latex files")
+  "file containing a list of frequently used latex environments")
 
 ;; (defvar al-package-history-file
 ;;   "~/.emacs.d/anything-latex-package-history"
