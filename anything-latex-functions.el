@@ -216,13 +216,32 @@
 
 (defun al-use-cleveref-p (buffer)
   (let (;; (cleveref-pattern "^[^%\n]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
+        ;; (cleveref-pattern (rx line-start
+        ;;                       (0+ (not (any "%\n")))
+        ;;                       "\\usepackage"
+        ;;                       (opt (seq "["
+        ;;                                 (0+ (any alpha ", "))
+        ;;                                 "]"))
+        ;;                       "{cleveref}"))
         (cleveref-pattern (rx line-start
                               (0+ (not (any "%\n")))
                               "\\usepackage"
                               (opt (seq "["
                                         (0+ (any alpha ", "))
                                         "]"))
-                              "{cleveref}"))
+                              "{"
+                              (0+ space)
+                              (0+ (seq (1+ alphanumeric)  ; alpha? alphanumeric?
+                                       (0+ space)
+                                       ","
+                                       (0+ space)))
+                              "cleveref"
+                              (0+ space)
+                              (0+ (seq ","
+                                       (0+ space)
+                                       (1+ alphanumeric)
+                                       (0+ space)))
+                              "}")) ; \usepackage{amsthm,cleveref,tikz} でもok
 	(use-cleveref nil))
     (with-current-buffer buffer
       (save-excursion
