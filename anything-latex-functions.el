@@ -26,6 +26,10 @@
    ":" t)
   "list of texmf directories")
 
+(defvar al-indent-string
+  "  "
+  "string used to indent")
+
 ;;; TODO: remove full path
 ;; (defvar al-used-packages-file
 ;;   "~/Git/anything-latex/anything-latex-used-packages"
@@ -365,7 +369,7 @@
     ;; (when not-increase-indent
     ;;   (setq indent-increase ""))
     (cond ((stringp indent-increase) t)
-	  ((eq indent-increase t) (setq indent-increase "  "))
+	  ((eq indent-increase t) (setq indent-increase al-indent-string))
 	  ((not indent-increase) (setq indent-increase "")))
     (when itemize-like
       (setq default-text "\\item "))
