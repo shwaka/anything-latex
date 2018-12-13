@@ -227,11 +227,11 @@
                               (0+ (not (any "%\n")))
                               "\\usepackage"
                               (opt (seq "["
-                                        (0+ (any alpha ", "))
+                                        (0+ (any alphanumeric ", "))
                                         "]"))
                               "{"
                               (0+ space)
-                              (0+ (seq (1+ alphanumeric)  ; alpha? alphanumeric?
+                              (0+ (seq (1+ (any alphanumeric "-"))  ; alpha? alphanumeric?
                                        (0+ space)
                                        ","
                                        (0+ space)))
@@ -239,7 +239,7 @@
                               (0+ space)
                               (0+ (seq ","
                                        (0+ space)
-                                       (1+ alphanumeric)
+                                       (1+ (any alphanumeric "-"))
                                        (0+ space)))
                               "}")) ; \usepackage{amsthm,cleveref,tikz} でもok
 	(use-cleveref nil))
