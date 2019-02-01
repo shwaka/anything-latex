@@ -1,5 +1,5 @@
 (require 'anything-latex-functions)
-(require 'anything-config)
+;; (require 'anything-config)
 
 (defun al-show-persistent-label (label)
   (al-show-persistent-label-func label anything-current-buffer))
