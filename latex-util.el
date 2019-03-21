@@ -1,7 +1,10 @@
 (defvar latex-util-patterns-for-label
-  '("\\\\begin{\\([a-zA-Z0-9*]*\\)}"
-    "\\\\\\(section\\)"
-    "\\\\\\(item\\)"))
+  (list (rx "\\begin{"
+            (group (0+ (any alpha digit "*")))
+            "}")
+        (rx "\\" (group (or "section"
+                            "subsection"
+                            "item")))))
 
 (defun latex-util-search-pattern (pattern)
   (save-excursion
