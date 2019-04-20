@@ -539,6 +539,16 @@ Evaluated in the following way:
         ((equal command "forward search (synctex)")
          (TeX-command "Fwdevince" 'TeX-master-file))))
 
+(defun al-execute-command-1 (command)
+  (cond ((equal command "latexmk/view")
+         (al-execute-command "latexmk"))
+        (t (al-execute-command command))))
+
+(defun al-execute-command-2 (command)
+  (cond ((equal command "latexmk/view")
+         (al-execute-command "view"))
+        (t (al-execute-command command))))
+
 ;;; compile
 ;; (defvar al-compile-command
 ;;   "platex $BASENAME.tex; platex $BASENAME.tex; dvipdfmx $BASENAME.dvi"

@@ -59,11 +59,12 @@
 
 (defvar anything-c-source-latex-commands
   '((name . "LaTeX Commands")
-    (candidates . ("latexmk"
+    (candidates . ("latexmk/view"
                    "view"
                    "latexmk clean" "latexmk clean all"
                    "forward search (synctex)"))
-    (action ("execute" . al-execute-command))))
+    (action ("execute" . al-execute-command-1)
+            ("execute-2" . al-execute-command-2))))
 
 ;;; anything command
 (defun anything-for-latex ()
