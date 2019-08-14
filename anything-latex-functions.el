@@ -401,7 +401,8 @@
               (wait-option (plist-get file-info :wait-option)))
           (al-insert-ctrl-seq ctrl-seq name)
           (when wait-option
-            (al-wait-option))))))
+            (al-wait-option)))
+      (message "Invalid filename: %s. Configure it in al-file-type-list" filename))))
 
 ;; (defun al-insert-package-path (package-path)
 ;;   (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
