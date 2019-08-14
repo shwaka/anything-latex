@@ -66,8 +66,8 @@
   (when (or (not noerror)
 	    (file-exists-p filename))
     (with-temp-buffer
-    (insert-file-contents filename)
-    (read (current-buffer)))))
+      (insert-file-contents filename)
+      (read (current-buffer)))))
 
 (defun al-add-data (data-elem filename)
   (al-save-data (delete-dups (cons data-elem (al-load-data filename t)))
@@ -163,7 +163,7 @@
 	(goto-char (point-min))
 	(if (not (re-search-forward pattern nil t))
 	    nil
-	    ;; (error "\\bibliography{...} not found")
+	  ;; (error "\\bibliography{...} not found")
 	  (substring (shell-command-to-string
 	  	      (format "kpsewhich %s.bib" (match-string 1)))
 	  	     0 -1))))))
@@ -364,6 +364,21 @@
   `((:regexp ,(rx (group (1+ any)) ".cls" string-end)
      :ctrl-seq "documentclass"
      :wait-option t)
+    (:regexp ,(rx "beamertheme" (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "usetheme"
+     :wait-option nil)
+    (:regexp ,(rx "beamercolortheme" (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "usecolortheme"
+     :wait-option nil)
+    (:regexp ,(rx "beamerfonttheme" (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "usefonttheme"
+     :wait-option nil)
+    (:regexp ,(rx "beamerinnertheme" (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "useinnertheme"
+     :wait-option nil)
+    (:regexp ,(rx "beameroutertheme" (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "useoutertheme"
+     :wait-option nil)
     (:regexp ,(rx (group (1+ any)) ".sty" string-end)
      :ctrl-seq "usepackage"
      :wait-option t)
