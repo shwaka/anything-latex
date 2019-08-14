@@ -2,6 +2,7 @@
 ;;; Hence you can use this not only in anything.el but also in another interface.
 
 (require 'em-glob)
+(require 'seq)
 
 ;;; variables
 (defvar al-default-theorem-list
@@ -55,17 +56,6 @@
 			  #'(lambda (s) (concat s " "))
 			  al-texmf-dirs)))
   "command to list files in texmf directories")
-
-(defvar al-insert-ctrl-seq-alist
-  '(("cls" . ((ctrl-seq . "documentclass")
-	      (wait-option . t)))
-    ("sty" . ((ctrl-seq . "usepackage")
-	      (wait-option . t)))
-    ("bib" . ((ctrl-seq . "bibliography")
-	      (wait-option nil)))
-    ("bst" . ((ctrl-seq . "bibliographystyle")
-	      (wait-option nil)))
-    ))
 
 ;;; functions
 (defun al-save-data (data filename)
@@ -370,20 +360,48 @@
 ;;   (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
 ;;   (al-wait-option))
 
+(defvar al-file-type-list
+  `((:regexp ,(rx (group (1+ any)) ".cls" string-end)
+     :ctrl-seq "documentclass"
+     :wait-option t)
+    (:regexp ,(rx (group (1+ any)) ".sty" string-end)
+     :ctrl-seq "usepackage"
+     :wait-option t)
+    (:regexp ,(rx (group (1+ any)) ".bib" string-end)
+     :ctrl-seq "bibliography"
+     :wait-option nil)
+    (:regexp ,(rx (group (1+ any)) ".bst" string-end)
+     :ctrl-seq "bibliographystyle"
+     :wait-option nil)
+    (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
+     :ctrl-seq "usetikzlibrary"
+     :wait-option nil)))
+
+(defun al-get-file-info--for-file-type (filename file-type)
+  (let ((regexp (plist-get file-type :regexp)))
+    (when (string-match regexp filename)
+      (list :name (match-string 1 filename)
+            :ctrl-seq (plist-get file-type :ctrl-seq)
+            :wait-option (plist-get file-type :wait-option)))))
+(defun al-get-file-info (filename)
+  (seq-some (lambda (file-type)
+              (al-get-file-info--for-file-type filename file-type))
+            al-file-type-list))
+
 ;;; TODO: \usepackage{amsmath,amsthm,amssymb}
 (defun al-insert-file (filename)
   "insert something"
   ;; (al-save-data (delete-dups (cons filename (al-load-data al-files-history-path t)))
   ;;       	al-files-history-path)
   (al-add-data filename al-files-history-path)
-  (let* ((basename (file-name-sans-extension filename))
-	 (ext (file-name-extension filename))
-	 (insert-option-alist (assoc-default ext al-insert-ctrl-seq-alist))
-	 (ctrl-seq (assoc-default 'ctrl-seq insert-option-alist))
-	 (wait-option (assoc-default 'wait-option insert-option-alist)))
-    (al-insert-ctrl-seq ctrl-seq basename)
-    (when wait-option
-      (al-wait-option))))
+  (let ((file-info (al-get-file-info filename)))
+    (if file-info
+        (let ((name (plist-get file-info :name))
+              (ctrl-seq (plist-get file-info :ctrl-seq))
+              (wait-option (plist-get file-info :wait-option)))
+          (al-insert-ctrl-seq ctrl-seq name)
+          (when wait-option
+            (al-wait-option))))))
 
 ;; (defun al-insert-package-path (package-path)
 ;;   (al-insert-package (file-name-sans-extension (file-name-nondirectory package-path))))
