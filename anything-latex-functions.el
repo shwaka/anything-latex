@@ -365,32 +365,24 @@
      :ctrl-seq "documentclass"
      :wait-option t)
     (:regexp ,(rx "beamertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usetheme"
-     :wait-option nil)
+     :ctrl-seq "usetheme")
     (:regexp ,(rx "beamercolortheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usecolortheme"
-     :wait-option nil)
+     :ctrl-seq "usecolortheme")
     (:regexp ,(rx "beamerfonttheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usefonttheme"
-     :wait-option nil)
+     :ctrl-seq "usefonttheme")
     (:regexp ,(rx "beamerinnertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "useinnertheme"
-     :wait-option nil)
+     :ctrl-seq "useinnertheme")
     (:regexp ,(rx "beameroutertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "useoutertheme"
-     :wait-option nil)
+     :ctrl-seq "useoutertheme")
     (:regexp ,(rx (group (1+ any)) ".sty" string-end)
      :ctrl-seq "usepackage"
      :wait-option t)
     (:regexp ,(rx (group (1+ any)) ".bib" string-end)
-     :ctrl-seq "bibliography"
-     :wait-option nil)
+     :ctrl-seq "bibliography")
     (:regexp ,(rx (group (1+ any)) ".bst" string-end)
-     :ctrl-seq "bibliographystyle"
-     :wait-option nil)
+     :ctrl-seq "bibliographystyle")
     (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
-     :ctrl-seq "usetikzlibrary"
-     :wait-option nil)))
+     :ctrl-seq "usetikzlibrary")))
 
 (defun al-get-file-info--for-file-type (filename file-type)
   (let ((regexp (plist-get file-type :regexp)))
