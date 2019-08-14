@@ -360,29 +360,27 @@
 ;;   (al-insert-ctrl-seq "usepackage" (file-name-sans-extension package))
 ;;   (al-wait-option))
 
+(defvar al-file-type-list--beamer
+  (mapcar (lambda (themetype)
+            (list :regexp (rx (eval (format "beamer%stheme" themetype))
+                              (group (1+ any)) ".sty" string-end)
+                  :ctrl-seq (format "use%stheme" themetype)))
+          '("" "color" "font" "inner" "outer")))
+
 (defvar al-file-type-list
-  `((:regexp ,(rx (group (1+ any)) ".cls" string-end)
-     :ctrl-seq "documentclass"
-     :wait-option t)
-    (:regexp ,(rx "beamertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usetheme")
-    (:regexp ,(rx "beamercolortheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usecolortheme")
-    (:regexp ,(rx "beamerfonttheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usefonttheme")
-    (:regexp ,(rx "beamerinnertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "useinnertheme")
-    (:regexp ,(rx "beameroutertheme" (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "useoutertheme")
-    (:regexp ,(rx (group (1+ any)) ".sty" string-end)
-     :ctrl-seq "usepackage"
-     :wait-option t)
-    (:regexp ,(rx (group (1+ any)) ".bib" string-end)
-     :ctrl-seq "bibliography")
-    (:regexp ,(rx (group (1+ any)) ".bst" string-end)
-     :ctrl-seq "bibliographystyle")
-    (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
-     :ctrl-seq "usetikzlibrary")))
+  (append al-file-type-list--beamer
+          `((:regexp ,(rx (group (1+ any)) ".cls" string-end)
+             :ctrl-seq "documentclass"
+             :wait-option t)
+            (:regexp ,(rx (group (1+ any)) ".sty" string-end)
+             :ctrl-seq "usepackage"
+             :wait-option t)
+            (:regexp ,(rx (group (1+ any)) ".bib" string-end)
+             :ctrl-seq "bibliography")
+            (:regexp ,(rx (group (1+ any)) ".bst" string-end)
+             :ctrl-seq "bibliographystyle")
+            (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
+             :ctrl-seq "usetikzlibrary"))))
 
 (defun al-get-file-info--for-file-type (filename file-type)
   (let ((regexp (plist-get file-type :regexp)))
