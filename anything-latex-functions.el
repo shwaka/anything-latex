@@ -30,15 +30,11 @@
   "  "
   "string used to indent")
 
-;;; TODO: remove full path
-;; (defvar al-used-packages-file
-;;   "~/Git/anything-latex/anything-latex-used-packages"
-;;   "file containing a list of frequently used packages")
 (defvar al-popular-files-path
-  "~/Git/anything-latex/anything-latex-popular-files"
+  (locate-file "anything-latex-popular-files" load-path)
   "file containing a list of frequently used latex files")
 (defvar al-popular-environments-path
-  "~/Git/anything-latex/anything-latex-popular-environments"
+  (locate-file "anything-latex-popular-environments" load-path)
   "file containing a list of frequently used latex environments")
 
 ;; (defvar al-package-history-file
