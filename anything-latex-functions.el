@@ -362,8 +362,9 @@
 
 (defvar al-file-type-list--beamer
   (mapcar (lambda (themetype)
-            (list :regexp (rx (eval (format "beamer%stheme" themetype))
-                              (group (1+ any)) ".sty" string-end)
+            (list :regexp (rx-to-string `(seq (eval (format "beamer%stheme" ,themetype))
+                                              (group (1+ any)) ".sty" string-end)
+                                        t)
                   :ctrl-seq (format "use%stheme" themetype)))
           '("" "color" "font" "inner" "outer")))
 
