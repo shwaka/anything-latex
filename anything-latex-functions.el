@@ -381,6 +381,8 @@
             (:regexp ,(rx (group (1+ any)) ".bst" string-end)
              :ctrl-seq "bibliographystyle")
             (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
+             :ctrl-seq "usetikzlibrary")
+            (:regexp ,(rx "pgflibrary" (group (1+ any)) ".code.tex" string-end)
              :ctrl-seq "usetikzlibrary"))))
 
 (defun al-get-file-info--for-file-type (filename file-type)
