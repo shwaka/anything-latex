@@ -191,13 +191,13 @@
 	(reverse theorem-list)))))
 
 (defun al-search-environment (buffer)
-  (let ((environment-pattern "\\\\newenvironment{\\([a-zA-Z]*\\)}")
+  (let ((environment-pattern "\\\\\\(re\\)?newenvironment{\\([a-zA-Z]*\\)}")
 	(environment-list ()))
     (with-current-buffer buffer
       (save-excursion
 	(goto-char (point-min))
 	(while (re-search-forward environment-pattern nil t)
-	  (add-to-list 'environment-list (match-string 1)))
+	  (add-to-list 'environment-list (match-string 2)))
 	(reverse environment-list)))))
 
 (defun al-use-cleveref-p (buffer)
