@@ -557,8 +557,9 @@ Evaluated in the following way:
 	((equal command "view")
 	 ;; (TeX-command "View" 'TeX-master-file nil)
          ;; https://stackoverflow.com/questions/13901955/how-to-avoid-pop-up-of-async-shell-command-buffer-in-emacs
-         (call-process-shell-command (concat "evince " (TeX-master-file) ".pdf") nil 0)
-         )
+         (let* ((filename (concat (TeX-master-file) ".pdf"))
+                (escaped-filename (shell-quote-argument filename)))
+           (call-process-shell-command (concat "evince " escaped-filename) nil 0)))
         ((equal command "forward search (synctex)")
          (TeX-command "Fwdevince" 'TeX-master-file))))
 
