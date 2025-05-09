@@ -311,18 +311,20 @@
     (setq bibkey ".*"))
   (format "^@[a-zA-Z]* *{\\(%s\\)," bibkey))
 
+(defun al-get-bibkey-from-bib-file (file)
+  (let ((res ()))
+    ;; (find-file-noselect bib-file t)
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (while (re-search-forward (al-bibkey-pattern) nil t)
+	(add-to-list 'res (match-string 1))))
+    res))
+
 (defun al-find-bibkeys ()
   (if (not al-bib-file)
       nil
-    (let ((res ()))
-      ;; (find-file-noselect bib-file t)
-      (with-temp-buffer
-	(insert-file-contents al-bib-file)
-	(goto-char (point-min))
-	(while (re-search-forward (al-bibkey-pattern) nil t)
-	  (add-to-list 'res (match-string 1))))
-      res))
-  )
+    (al-get-bibkey-from-bib-file al-bib-file)))
 
 (defun al-insert-ctrl-seq (ctrl-seq key &optional option)
   "insert \\ctrl-seq{key} or \\ctrl-seq[option]{key}"
