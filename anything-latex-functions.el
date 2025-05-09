@@ -21,6 +21,10 @@
   '()
   "environment list added by a user")
 
+(defvar al-itemize-like-environment-list
+  '("itemize" "enumerate")
+  "environments similar to itemize or enumerate")
+
 (defvar al-texmf-dirs
   (split-string
    (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
@@ -447,7 +451,7 @@
 	(itemize-like nil))
     (when (member envname '("document"))
       (setq indent-increase nil))
-    (when (member envname '("itemize" "enumerate"))
+    (when (member envname al-itemize-like-environment-list)
       (setq indent-increase t)
       (setq itemize-like t))
     (al-insert-environment-func envname indent-increase itemize-like)))
