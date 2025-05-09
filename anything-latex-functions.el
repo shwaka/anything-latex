@@ -326,8 +326,28 @@
 	(add-to-list 'res (match-string 1))))
     res))
 
-(defun al-find-bibkeys ()
+(defvar al-bibitem-pattern
+  (rx "\\bibitem"
+      "[" (group (+ (not (any "]")))) "]"
+      "{" (group (+ (not (any "}")))) "}")
+  "regex for \\bibitem[foo]{bar}")
+
+(defun al-find-bibkeys-from-thebibliography (buffer)
+  (with-current-buffer buffer
+    (save-excursion
+      (goto-char (point-min))
+      (let ((res ()))
+        (while (re-search-forward al-bibitem-pattern nil t)
+          (add-to-list 'res (match-string 2)))
+        res))))
+
+(defun al-find-bibkeys-from-bib-file-list ()
   (mapcan 'al-get-bibkey-from-bib-file al-bib-file-list))
+
+(defun al-find-bibkeys ()
+  (append
+   (al-find-bibkeys-from-bib-file-list)
+   (al-find-bibkeys-from-thebibliography anything-current-buffer)))
 
 (defun al-insert-ctrl-seq (ctrl-seq key &optional option)
   "insert \\ctrl-seq{key} or \\ctrl-seq[option]{key}"
