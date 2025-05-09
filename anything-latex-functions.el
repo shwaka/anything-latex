@@ -159,6 +159,11 @@
 	(re-search-backward label-pattern nil t)
 	(point)))))
 
+(defun al-find-bib-file-of-name (name)
+  (substring (shell-command-to-string
+	      (format "kpsewhich %s.bib" name))
+	     0 -1))
+
 (defun al-find-bib-file (buffer)
   (interactive "sBuffer: ")
   (let ((pattern "^\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
@@ -168,9 +173,7 @@
 	(if (not (re-search-forward pattern nil t))
 	    nil
 	  ;; (error "\\bibliography{...} not found")
-	  (substring (shell-command-to-string
-	  	      (format "kpsewhich %s.bib" (match-string 1)))
-	  	     0 -1))))))
+          (al-find-bib-file-of-name (match-string 1)))))))
 
 (defun al-search-theorem (buffer)
   (let (;; (theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
