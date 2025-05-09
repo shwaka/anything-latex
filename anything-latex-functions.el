@@ -289,7 +289,7 @@
                                                  (al-get-environment-list)))))
 
 (defun al-bibkey-init (buffer)
-  (setq al-bib-file (al-find-bib-file buffer)))
+  (setq al-bib-file-list (list (al-find-bib-file buffer))))
 
 (defun al-init (buffer)
   (al-label-init buffer)
@@ -322,9 +322,7 @@
     res))
 
 (defun al-find-bibkeys ()
-  (if (not al-bib-file)
-      nil
-    (al-get-bibkey-from-bib-file al-bib-file)))
+  (mapcan 'al-get-bibkey-from-bib-file al-bib-file-list))
 
 (defun al-insert-ctrl-seq (ctrl-seq key &optional option)
   "insert \\ctrl-seq{key} or \\ctrl-seq[option]{key}"
