@@ -164,7 +164,7 @@
 	      (format "kpsewhich %s.bib" name))
 	     0 -1))
 
-(defun al-find-bib-file (buffer)
+(defun al-find-bib-file-list (buffer)
   (interactive "sBuffer: ")
   (let ((pattern "^\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
     (with-current-buffer buffer
@@ -173,7 +173,9 @@
 	(if (not (re-search-forward pattern nil t))
 	    nil
 	  ;; (error "\\bibliography{...} not found")
-          (al-find-bib-file-of-name (match-string 1)))))))
+          (let* ((bibliography-arg (match-string 1))
+                 (name-list (mapcar #'string-trim (split-string bibliography-arg ","))))
+            (mapcar 'al-find-bib-file-of-name name-list)))))))
 
 (defun al-search-theorem (buffer)
   (let (;; (theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
@@ -292,7 +294,7 @@
                                                  (al-get-environment-list)))))
 
 (defun al-bibkey-init (buffer)
-  (setq al-bib-file-list (list (al-find-bib-file buffer))))
+  (setq al-bib-file-list (al-find-bib-file-list buffer)))
 
 (defun al-init (buffer)
   (al-label-init buffer)
