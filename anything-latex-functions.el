@@ -53,13 +53,41 @@
   "~/.emacs.d/anything-latex-environments-history"
   "file to save history of latex files")
 
-(defvar al-shell-command-list-files
+(defun al-join-with-space--impl (arg)
+  (cond
+   ((listp arg) (mapconcat #'al-join-with-space--impl arg " "))
+   ((stringp arg) arg)
+   (t (error (format "Invalid arg for join-with-space--impl: %s" arg)))))
+(defun al-join-with-space (&rest strings)
+  (al-join-with-space--impl strings))
+
+(defvar al-allowed-file-ext-list
+  '("cls" "sty" "bib" "bst" "code.tex")
+  "allowed file extensions for al-shell-command-list-files")
+
+(defun al-shell-command-list-files ()
+  ;; command to list files in texmf directories
   ;; "find $(kpsewhich -expand-path='$TEXMF' | sed -e \"s/:/ /g\")"
-  (format "find %s \\( -name fonts -prune \\) -or \\( -xtype f -printf \"%%f\n\" \\)"
+  (format "find %s %s"
 	  (apply 'concat (mapcar
 			  #'(lambda (s) (concat s " "))
-			  al-texmf-dirs)))
-  "command to list files in texmf directories")
+			  al-texmf-dirs))
+          (al-join-with-space
+           '("\\("
+             "-name fonts"
+             "-prune"
+             "\\)")
+           "-or"
+           `("\\("
+             "-xtype f"
+             ("\\("
+              ,(mapconcat
+                (lambda (ext) (format "-iname \"*.%s\"" ext))
+                al-allowed-file-ext-list
+                " -or ")
+              "\\)")
+             "-printf \"%f\n\""
+             "\\)"))))
 
 ;;; functions
 (defun al-save-data (data filename)
@@ -90,7 +118,7 @@
      (buffer-substring-no-properties (point-min) (point-max)))
    "\n"
    ;; all files
-   (shell-command-to-string al-shell-command-list-files)))
+   (shell-command-to-string (al-shell-command-list-files))))
 
 (defun al-get-environment-list ()
   (delete-dups
