@@ -61,9 +61,12 @@
 (defun al-join-with-space (&rest strings)
   (al-join-with-space--impl strings))
 
-(defvar al-allowed-file-ext-list
-  '("cls" "sty" "bib" "bst" "code.tex")
-  "allowed file extensions for al-shell-command-list-files")
+(defun al-allowed-file-ext-list ()
+  ;; allowed file extensions for al-shell-command-list-files
+  ;; '("cls" "sty" "bib" "bst" "code.tex")
+  (cl-remove-duplicates
+   (mapcar (lambda (file-type) (plist-get file-type :ext)) al-file-type-list)
+   :test #'equal))
 
 (defun al-shell-command-list-files ()
   ;; command to list files in texmf directories
@@ -83,7 +86,7 @@
              ("\\("
               ,(mapconcat
                 (lambda (ext) (format "-iname \"*.%s\"" ext))
-                al-allowed-file-ext-list
+                (al-allowed-file-ext-list)
                 " -or ")
               "\\)")
              "-printf \"%f\n\""
@@ -422,25 +425,32 @@
             (list :regexp (rx-to-string `(seq (eval (format "beamer%stheme" ,themetype))
                                               (group (1+ any)) ".sty" string-end)
                                         t)
-                  :ctrl-seq (format "use%stheme" themetype)))
+                  :ctrl-seq (format "use%stheme" themetype)
+                  :ext "sty"))
           '("" "color" "font" "inner" "outer")))
 
 (defvar al-file-type-list
   (append al-file-type-list--beamer
           `((:regexp ,(rx (group (1+ any)) ".cls" string-end)
              :ctrl-seq "documentclass"
+             :ext "cls"
              :wait-option t)
             (:regexp ,(rx (group (1+ any)) ".sty" string-end)
              :ctrl-seq "usepackage"
+             :ext "sty"
              :wait-option t)
             (:regexp ,(rx (group (1+ any)) ".bib" string-end)
-             :ctrl-seq "bibliography")
+             :ctrl-seq "bibliography"
+             :ext "bib")
             (:regexp ,(rx (group (1+ any)) ".bst" string-end)
-             :ctrl-seq "bibliographystyle")
+             :ctrl-seq "bibliographystyle"
+             :ext "bst")
             (:regexp ,(rx "tikzlibrary" (group (1+ any)) ".code.tex" string-end)
-             :ctrl-seq "usetikzlibrary")
+             :ctrl-seq "usetikzlibrary"
+             :ext "code.tex")
             (:regexp ,(rx "pgflibrary" (group (1+ any)) ".code.tex" string-end)
-             :ctrl-seq "usetikzlibrary"))))
+             :ctrl-seq "usetikzlibrary"
+             :ext "code.tex"))))
 
 (defun al-get-file-info--for-file-type (filename file-type)
   (let ((regexp (plist-get file-type :regexp)))
