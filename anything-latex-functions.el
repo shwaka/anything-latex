@@ -245,7 +245,7 @@
                              (0+ (not (any "%\n")))
                              "\\usepackage"
                              (opt (seq "["
-                                       (0+ (any alphanumeric ", "))
+                                       (0+ (any alphanumeric ", .={}"))
                                        "]"))
                              "{"
                              (0+ space)
@@ -268,8 +268,13 @@
             t
           nil)))))
 
+(defvar al-cleveref-package-list
+  '("cleveref")
+  "packages which call \\usepackage{cleveref}")
+
 (defun al-use-cleveref-p (buffer)
-  (al-usepackage-p buffer "cleveref"))
+  (cl-some (lambda (package-name) (al-usepackage-p buffer package-name))
+           al-cleveref-package-list))
 
 (defun al-1-arg-pattern (ctrl-seq &optional arg)
   (unless arg
