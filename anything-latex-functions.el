@@ -240,42 +240,36 @@
 	  (add-to-list 'environment-list (match-string 2)))
 	(reverse environment-list)))))
 
-(defun al-use-cleveref-p (buffer)
-  (let (;; (cleveref-pattern "^[^%\n]*\\\\usepackage\\(?:\\[[a-zA-Z, ]*\\]\\)?{cleveref}")
-        ;; (cleveref-pattern (rx line-start
-        ;;                       (0+ (not (any "%\n")))
-        ;;                       "\\usepackage"
-        ;;                       (opt (seq "["
-        ;;                                 (0+ (any alpha ", "))
-        ;;                                 "]"))
-        ;;                       "{cleveref}"))
-        (cleveref-pattern (rx line-start
-                              (0+ (not (any "%\n")))
-                              "\\usepackage"
-                              (opt (seq "["
-                                        (0+ (any alphanumeric ", "))
-                                        "]"))
-                              "{"
-                              (0+ space)
-                              (0+ (seq (1+ (any alphanumeric "-"))  ; alpha? alphanumeric?
-                                       (0+ space)
-                                       ","
-                                       (0+ space)))
-                              "cleveref"
-                              (0+ space)
-                              (0+ (seq ","
-                                       (0+ space)
-                                       (1+ (any alphanumeric "-"))
-                                       (0+ space)))
-                              "}")) ; \usepackage{amsthm,cleveref,tikz} でもok
-	(use-cleveref nil))
+(defun al-usepackage-p (buffer package-name)
+  (let* ((pattern-sexp '(seq line-start
+                             (0+ (not (any "%\n")))
+                             "\\usepackage"
+                             (opt (seq "["
+                                       (0+ (any alphanumeric ", "))
+                                       "]"))
+                             "{"
+                             (0+ space)
+                             (0+ (seq (1+ (any alphanumeric "-")) ; alpha? alphanumeric?
+                                      (0+ space)
+                                      ","
+                                      (0+ space)))
+                             (eval package-name)
+                             (0+ space)
+                             (0+ (seq ","
+                                      (0+ space)
+                                      (1+ (any alphanumeric "-"))
+                                      (0+ space)))
+                             "}"))
+         (pattern (rx-to-string pattern-sexp)))
     (with-current-buffer buffer
       (save-excursion
 	(goto-char (point-min))
-	(if (re-search-forward cleveref-pattern nil t)
-	    (setq use-cleveref t)
-	  (setq use-cleveref nil))
-	use-cleveref))))
+	(if (re-search-forward pattern nil t)
+            t
+          nil)))))
+
+(defun al-use-cleveref-p (buffer)
+  (al-usepackage-p buffer "cleveref"))
 
 (defun al-1-arg-pattern (ctrl-seq &optional arg)
   (unless arg
