@@ -3,6 +3,7 @@
 
 (require 'em-glob)
 (require 'seq)
+(require 'anything-latex-subfiles)
 
 ;;; variables
 (defvar al-default-theorem-list
@@ -326,6 +327,10 @@
 (defun al-bibkey-init (buffer)
   (setq al-bib-file-list (al-find-bib-file-list buffer)))
 
+(defun al-subfiles-init (buffer)
+  (setq al-subfiles-alist nil)
+  (al-subfiles-collect-into-alist buffer al-subfiles-alist))
+
 (defun al-init (buffer)
   (al-label-init buffer)
   (al-bibkey-init buffer)
@@ -338,7 +343,7 @@
 	  (setq al-reftype "cref")
 	(setq al-reftype "ref"))))
   ;; (setq al-texmf-files-list (al-list-files-in-texmf))
-  )
+  (al-subfiles-init buffer))
 
 (defun al-bibkey-pattern (&optional bibkey)
   (if bibkey
