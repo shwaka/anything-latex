@@ -8,7 +8,7 @@
   (al-search-label anything-current-buffer))
 
 (defun anything-c-latex-get-bibkeys ()
-  (al-find-bibkeys))
+  (al-find-bibkeys anything-current-buffer))
 
 (defun anything-c-latex-get-theorems ()
   al-theorem-list)

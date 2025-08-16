@@ -374,10 +374,10 @@
 (defun al-find-bibkeys-from-bib-file-list ()
   (mapcan 'al-get-bibkey-from-bib-file al-bib-file-list))
 
-(defun al-find-bibkeys ()
+(defun al-find-bibkeys (buffer)
   (append
    (al-find-bibkeys-from-bib-file-list)
-   (al-find-bibkeys-from-thebibliography anything-current-buffer)))
+   (al-find-bibkeys-from-thebibliography buffer)))
 
 (defun al-insert-ctrl-seq (ctrl-seq key &optional option)
   "insert \\ctrl-seq{key} or \\ctrl-seq[option]{key}"
