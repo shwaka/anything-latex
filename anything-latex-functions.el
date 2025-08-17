@@ -208,7 +208,7 @@
 
 (defun al-find-bib-file-list (buffer)
   (interactive "sBuffer: ")
-  (let ((pattern "^\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
+  (let ((pattern "^[^%]*\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
     (with-current-buffer buffer
       (save-excursion
 	(goto-char (point-min))
