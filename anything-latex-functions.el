@@ -206,8 +206,7 @@
 	      (format "kpsewhich %s.bib" name))
 	     0 -1))
 
-(defun al-find-bib-file-list (buffer)
-  (interactive "sBuffer: ")
+(defun al-find-bib-file-list--from-buffer (buffer)
   (let ((pattern "^[^%]*\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
     (with-current-buffer buffer
       (save-excursion
@@ -218,6 +217,17 @@
           (let* ((bibliography-arg (match-string 1))
                  (name-list (mapcar #'string-trim (split-string bibliography-arg ","))))
             (mapcar 'al-find-bib-file-of-name name-list)))))))
+
+(defun al-find-bib-file-list (buffer)
+  (interactive "sBuffer: ")
+  (let ((res ())
+        (subfile-buffer nil))
+    ;; res が nil なので setq が必要
+    (setq res (nconc res (al-find-bib-file-list--from-buffer buffer)))
+    (dolist (elt al-subfiles-alist)
+      (setq subfile-buffer (cdr elt))
+      (setq res (nconc res (al-find-bib-file-list--from-buffer subfile-buffer))))
+    res))
 
 (defun al-search-theorem (buffer)
   (let (;; (theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
