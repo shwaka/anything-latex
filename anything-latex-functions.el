@@ -28,7 +28,8 @@
 
 (defvar al-texmf-dirs
   (split-string
-   (al-kpsewhich "-expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
+   ;; emacs起動時に呼ばれてしまうので，ここでは al-kpsewhich は使わない
+   (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
    ":" t)
   "list of texmf directories")
 
