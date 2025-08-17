@@ -170,6 +170,17 @@
   "set config of the form '%ALCONFIG: variable = value'"
   (setq al-config-alist (al-get-config buffer)))
 
+(defun al-flatmap-with-subfiles (fn buffer)
+  (let ((res ())
+        (subfile-buffer nil))
+    ;; res が nil なので setq が必要
+    (setq res (nconc res (funcall fn buffer)))
+    (dolist (elt al-subfiles-alist)
+      (setq subfile-buffer (cdr elt))
+      ;; ここでもまだ res が nil の可能性に供えて setq する
+      (setq res (nconc res (funcall fn subfile-buffer))))
+    res))
+
 (defun al-search-label--from-buffer (buffer)
   "search \\label{hoge}"
   (let ((res ()) (pattern "\\\\label{\\(.*?\\)}")) ; \\ref{\(.*?\)}
@@ -183,14 +194,7 @@
 
 (defun al-search-label (buffer)
   (interactive)
-  (let ((res ())
-        (subfile-buffer nil))
-    ;; res が nil なので setq が必要
-    (setq res (nconc res (al-search-label--from-buffer buffer)))
-    (dolist (elt al-subfiles-alist)
-      (setq subfile-buffer (cdr elt))
-      (setq res (nconc res (al-search-label--from-buffer subfile-buffer))))
-    res))
+  (al-flatmap-with-subfiles #'al-search-label--from-buffer buffer))
 
 (defun al-find-label (buffer label)
   (let ((label-pattern (regexp-opt (list (format "\\label{%s}" label)))))
@@ -220,14 +224,7 @@
 
 (defun al-find-bib-file-list (buffer)
   (interactive "sBuffer: ")
-  (let ((res ())
-        (subfile-buffer nil))
-    ;; res が nil なので setq が必要
-    (setq res (nconc res (al-find-bib-file-list--from-buffer buffer)))
-    (dolist (elt al-subfiles-alist)
-      (setq subfile-buffer (cdr elt))
-      (setq res (nconc res (al-find-bib-file-list--from-buffer subfile-buffer))))
-    res))
+  (al-flatmap-with-subfiles #'al-find-bib-file-list--from-buffer buffer))
 
 (defun al-search-theorem (buffer)
   (let (;; (theorem-pattern "\\\\newtheorem{\\([a-zA-Z]*\\)}\\(?:\[[a-zA-Z]*\]\\)?{\\([a-zA-Z]*\\)}")
