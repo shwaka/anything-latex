@@ -28,7 +28,7 @@
 
 (defvar al-texmf-dirs
   (split-string
-   (shell-command-to-string "kpsewhich -expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
+   (al-kpsewhich "-expand-path='$TEXMF' | LANG=C perl -pe \"s/\\n//\"")
    ":" t)
   "list of texmf directories")
 
@@ -92,6 +92,9 @@
               "\\)")
              "-printf \"%f\n\""
              "\\)"))))
+
+(defun al-kpsewhich (args)
+  (shell-command-to-string (format "kpsewhich %s" args)))
 
 ;;; functions
 (defun al-save-data (data filename)
@@ -206,8 +209,7 @@
 	(point)))))
 
 (defun al-find-bib-file-of-name (name)
-  (substring (shell-command-to-string
-	      (format "kpsewhich %s.bib" name))
+  (substring (al-kpsewhich (format "%s.bib" name))
 	     0 -1))
 
 (defun al-find-bib-file-list--from-buffer (buffer)
