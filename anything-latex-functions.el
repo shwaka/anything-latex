@@ -170,9 +170,8 @@
   "set config of the form '%ALCONFIG: variable = value'"
   (setq al-config-alist (al-get-config buffer)))
 
-(defun al-search-label (buffer)
+(defun al-search-label--from-buffer (buffer)
   "search \\label{hoge}"
-  (interactive)
   (let ((res ()) (pattern "\\\\label{\\(.*?\\)}")) ; \\ref{\(.*?\)}
     (with-current-buffer buffer
       (save-excursion
@@ -181,6 +180,17 @@
 	  (add-to-list 'res (match-string 1)))
 	;; (message (number-to-string (length res)))
 	(reverse res)))))
+
+(defun al-search-label (buffer)
+  (interactive)
+  (let ((res ())
+        (subfile-buffer nil))
+    ;; res が nil なので setq が必要
+    (setq res (nconc res (al-search-label--from-buffer buffer)))
+    (dolist (elt al-subfiles-alist)
+      (setq subfile-buffer (cdr elt))
+      (setq res (nconc res (al-search-label--from-buffer subfile-buffer))))
+    res))
 
 (defun al-find-label (buffer label)
   (let ((label-pattern (regexp-opt (list (format "\\label{%s}" label)))))
@@ -328,10 +338,10 @@
   (setq al-bib-file-list (al-find-bib-file-list buffer)))
 
 (defun al-subfiles-init (buffer)
-  (setq al-subfiles-alist nil)
-  (al-subfiles-collect-into-alist buffer al-subfiles-alist))
+  (setq al-subfiles-alist (al-subfiles-collect-into-alist buffer)))
 
 (defun al-init (buffer)
+  (al-subfiles-init buffer)
   (al-label-init buffer)
   (al-bibkey-init buffer)
   (al-set-config buffer)
@@ -343,7 +353,7 @@
 	  (setq al-reftype "cref")
 	(setq al-reftype "ref"))))
   ;; (setq al-texmf-files-list (al-list-files-in-texmf))
-  (al-subfiles-init buffer))
+  )
 
 (defun al-bibkey-pattern (&optional bibkey)
   (if bibkey
