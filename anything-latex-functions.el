@@ -93,8 +93,16 @@
              "-printf \"%f\n\""
              "\\)"))))
 
-(defun al-kpsewhich (args)
-  (shell-command-to-string (format "kpsewhich %s" args)))
+(defvar al-kpsewhich--cache-alist nil)
+
+(defun al-kpsewhich (args-str)
+  (let ((cache (alist-get args-str al-kpsewhich--cache-alist nil nil #'equal))
+        (res nil))
+    (if cache
+        cache
+      (setq res (shell-command-to-string (format "kpsewhich %s" args-str)))
+      (push (cons args-str res) al-kpsewhich--cache-alist)
+      res)))
 
 ;;; functions
 (defun al-save-data (data filename)
