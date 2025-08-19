@@ -193,6 +193,11 @@
       (setq res (nconc res (funcall fn subfile-buffer))))
     res))
 
+(defun al-some-of-subfiles (predicate buffer)
+  (cl-some predicate
+           (append (list buffer)
+                   (mapcar #'cdr al-subfiles-alist))))
+
 (defun al-search-label--from-buffer (buffer)
   "search \\label{hoge}"
   (let ((res ()) (pattern "\\\\label{\\(.*?\\)}")) ; \\ref{\(.*?\)}
@@ -301,9 +306,12 @@
   '("cleveref")
   "packages which call \\usepackage{cleveref}")
 
-(defun al-use-cleveref-p (buffer)
+(defun al-use-cleveref-p--in-buffer (buffer)
   (cl-some (lambda (package-name) (al-usepackage-p buffer package-name))
            al-cleveref-package-list))
+
+(defun al-use-cleveref-p (buffer)
+  (al-some-of-subfiles #'al-use-cleveref-p--in-buffer buffer))
 
 (defun al-1-arg-pattern (ctrl-seq &optional arg)
   (unless arg
