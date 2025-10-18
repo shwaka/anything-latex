@@ -640,11 +640,13 @@ Evaluated in the following way:
 ")
 
 (setq al-tex-buffer-memory nil)
+(setq al-current-buffer nil)
 (defun al-set-get-tex-buffer ()
   ;; (buffer-file-name) が
   ;; - *.texなら，(current-buffer)を返す
   ;; - *.texでなく，かつ al-tex-buffer-memory が non-nil なら，al-tex-buffer-memory を返す
   ;; - *.texでなく，かつ al-tex-buffer-memory が nil なら，(current-buffer) を返す
+  (setq al-current-buffer (current-buffer))
   (cond
    ((equal "tex" (file-name-extension (buffer-file-name)))
     (setq al-tex-buffer-memory (current-buffer))
@@ -663,6 +665,10 @@ Evaluated in the following way:
              (let ((al-master-file (TeX-master-file)))
                                         ; `TeX-master-file'を `TeX-command'の後に実行すると<none>になる
                (TeX-save-document (TeX-master-file))
+               ;; .sty ファイルなどから呼び出したときに，.sty ファイルそのものを保存する
+               (when al-current-buffer
+                 (with-current-buffer al-current-buffer
+                   (save-buffer)))
                (TeX-command "LatexMk" 'TeX-master-file nil)
                ;; (call-process-shell-command (format "latexmk-dropbox -notypeset %s.tex &" al-master-file)
                ;;                             nil 0)
