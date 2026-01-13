@@ -70,14 +70,15 @@
 (defun anything-for-latex ()
   (interactive)
   (al-init (current-buffer))
-  (anything-other-buffer '(anything-c-source-latex-commands
-                           ;; anything-c-source-latex-files
-                           anything-c-source-latex-theorems
-                           anything-c-source-latex-environments
-                           anything-c-source-latex-bibkeys
-                           anything-c-source-latex-labels
-                           anything-c-source-latex-files
-                           )
-                         "*anything for latex*"))
+  (let ((anything-mode-line-string ""))
+    (anything-other-buffer '(anything-c-source-latex-commands
+                             ;; anything-c-source-latex-files
+                             anything-c-source-latex-theorems
+                             anything-c-source-latex-environments
+                             anything-c-source-latex-bibkeys
+                             anything-c-source-latex-labels
+                             anything-c-source-latex-files
+                             )
+                           "*anything for latex*")))
 
 (provide 'anything-latex)
