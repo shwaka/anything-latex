@@ -685,7 +685,9 @@ Evaluated in the following way:
            ;; https://stackoverflow.com/questions/13901955/how-to-avoid-pop-up-of-async-shell-command-buffer-in-emacs
            (let* ((filename (concat (TeX-master-file) ".pdf"))
                   (escaped-filename (shell-quote-argument filename)))
-             (call-process-shell-command (concat "evince " escaped-filename) nil 0)))
+             (if (file-exists-p escaped-filename)
+                 (call-process-shell-command (concat "evince " escaped-filename) nil 0)
+               (message "Not found: %s" escaped-filename))))
           ((equal command "forward search (synctex)")
            (TeX-command "Fwdevince" 'TeX-master-file)))))
 
