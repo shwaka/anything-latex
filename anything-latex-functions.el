@@ -265,13 +265,24 @@
 	(reverse theorem-list)))))
 
 (defun al-search-environment (buffer)
-  (let ((environment-pattern "\\\\\\(re\\)?newenvironment{\\([a-zA-Z]*\\)}")
+  (let (;; (environment-pattern "\\\\\\(re\\)?newenvironment{\\([a-zA-Z]*\\)}")
+        (environment-pattern
+         (rx "\\"                         ; backslash
+             (? "re")                     ; optional "re"
+             "newenvironment"
+             (* space)
+             "{"
+             (* space)
+             (group (+ (any alpha digit "@:_-"))
+                    (? "*"))    ; environment name
+             (* space)
+             "}"))
 	(environment-list ()))
     (with-current-buffer buffer
       (save-excursion
 	(goto-char (point-min))
 	(while (re-search-forward environment-pattern nil t)
-	  (add-to-list 'environment-list (match-string 2)))
+	  (add-to-list 'environment-list (match-string 1)))
 	(reverse environment-list)))))
 
 (defun al-usepackage-p (buffer package-name)
