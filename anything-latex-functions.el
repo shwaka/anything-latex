@@ -4,6 +4,7 @@
 (require 'em-glob)
 (require 'seq)
 (require 'anything-latex-subfiles)
+(require 'anything-latex-environment)
 
 ;;; variables
 (defvar al-default-theorem-list
@@ -17,14 +18,6 @@
 (defvar al-additional-theorem-list
   '()
   "theorem list added by a user")
-
-(defvar al-additional-environment-list
-  '()
-  "environment list added by a user")
-
-(defvar al-itemize-like-environment-list
-  '("itemize" "enumerate")
-  "environments similar to itemize or enumerate")
 
 (defvar al-texmf-dirs
   (split-string
@@ -40,19 +33,12 @@
 (defvar al-popular-files-path
   (locate-file "anything-latex-popular-files" load-path)
   "file containing a list of frequently used latex files")
-(defvar al-popular-environments-path
-  (locate-file "anything-latex-popular-environments" load-path)
-  "file containing a list of frequently used latex environments")
 
 ;; (defvar al-package-history-file
 ;;   "~/.emacs.d/anything-latex-package-history"
 ;;   "file to save history of \\usepackage")
 (defvar al-files-history-path
   "~/.emacs.d/anything-latex-files-history"
-  "file to save history of latex files")
-
-(defvar al-environments-history-path
-  "~/.emacs.d/anything-latex-environments-history"
   "file to save history of latex files")
 
 (defun al-join-with-space--impl (arg)
@@ -135,20 +121,6 @@
    "\n"
    ;; all files
    (shell-command-to-string (al-shell-command-list-files))))
-
-(defun al-get-environment-list ()
-  (delete-dups
-   (append
-    ;; (al-load-data al-environments-history-path t)
-    ;; (apply 'concat (mapcar
-    ;;                 #'(lambda (s) (concat s "\n"))
-    ;;                 al-default-environment-list))
-    ;; al-default-environment-list
-    (with-temp-buffer
-      (insert-file-contents al-popular-environments-path)
-      (split-string (buffer-string) "\n" t))
-    )))
-
 
 ;;; functions
 
@@ -264,27 +236,6 @@
 	  (add-to-list 'theorem-list (match-string 1)))
 	(reverse theorem-list)))))
 
-(defun al-search-environment (buffer)
-  (let (;; (environment-pattern "\\\\\\(re\\)?newenvironment{\\([a-zA-Z]*\\)}")
-        (environment-pattern
-         (rx "\\"                         ; backslash
-             (? "re")                     ; optional "re"
-             "newenvironment"
-             (* space)
-             "{"
-             (* space)
-             (group (+ (any alpha digit "@:_-"))
-                    (? "*"))    ; environment name
-             (* space)
-             "}"))
-	(environment-list ()))
-    (with-current-buffer buffer
-      (save-excursion
-	(goto-char (point-min))
-	(while (re-search-forward environment-pattern nil t)
-	  (add-to-list 'environment-list (match-string 1)))
-	(reverse environment-list)))))
-
 (defun al-usepackage-p (buffer package-name)
   (let* ((pattern-sexp '(seq line-start
                              (0+ (not (any "%\n")))
@@ -364,12 +315,6 @@
   (setq al-use-cleveref (al-use-cleveref-p buffer))
   (setq al-user-theorem-list (al-search-theorem buffer))
   (setq al-theorem-list (append al-user-theorem-list al-additional-theorem-list al-default-theorem-list)))
-
-(defun al-environment-init (buffer)
-  (setq al-user-environment-list (al-search-environment buffer))
-  (setq al-environment-list (delete-dups (append (al-load-data al-environments-history-path t)
-                                                 al-user-environment-list al-additional-environment-list
-                                                 (al-get-environment-list)))))
 
 (defun al-bibkey-init (buffer)
   (setq al-bib-file-list (al-find-bib-file-list buffer)))
@@ -539,42 +484,6 @@
   ;; (insert "\\cite{" bibkey "}")
   (al-insert-ctrl-seq "cite" bibkey)
   (al-wait-option))
-
-(defun al-insert-environment-func (envname &optional indent-increase itemize-like)
-  (let ((indent-base (make-string (current-column) ?\ ))
-	;; (indent-increase "  ")
-	(default-text ""))
-    ;; (when not-increase-indent
-    ;;   (setq indent-increase ""))
-    (cond ((stringp indent-increase) t)
-	  ((eq indent-increase t) (setq indent-increase al-indent-string))
-	  ((not indent-increase) (setq indent-increase "")))
-    (when itemize-like
-      (setq default-text "\\item "))
-    (insert (format "\\begin{%s}\n%s%s%s\n%s\\end{%s}" envname indent-base indent-increase default-text indent-base envname))
-    (forward-line -1)
-    (end-of-line)
-    ;; (re-search-backward "\\\\end{" nil t)
-    ;; (backward-char)
-    ))
-
-(defun al-insert-environment (envname save-history)
-  (when save-history
-    (al-add-data envname al-environments-history-path))
-  (let ((indent-increase t)
-	(itemize-like nil))
-    (when (member envname '("document"))
-      (setq indent-increase nil))
-    (when (member envname al-itemize-like-environment-list)
-      (setq indent-increase t)
-      (setq itemize-like t))
-    (al-insert-environment-func envname indent-increase itemize-like)))
-
-(defun al-insert-environment-save (envname)
-  (al-insert-environment envname t))
-
-(defun al-insert-environment-notsave (envname)
-  (al-insert-environment envname nil))
 
 ;;; persistent-action
 (defun al-show-persistent (string)
