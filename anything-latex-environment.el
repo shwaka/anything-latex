@@ -38,7 +38,27 @@
   "File to save history of LaTeX environments.")
 
 (defvar al-additional-environment-argument-alist
-  '()
+  '(("minipage" . ((:type optional :default "t")
+                   (:type mandatory :default "0.5\\linewidth")))
+
+    ("tabular" . ((:type mandatory :default "")))
+    ("array" . ((:type mandatory :default "")))
+    ("thebibliography" . ((:type mandatory :default "99")))
+
+    ("frame" . ((:type optional :default "")
+                (:type mandatory :default "")))
+    ("block" . ((:type mandatory :default "title")))
+    ("exampleblock" . ((:type mandatory :default "title")))
+    ("alertblock" . ((:type mandatory :default "title")))
+    ("columns" . ((:type optional :default "t")))
+    ("column" . ((:type mandatory :default ".5\\textwidth")))
+
+    ("lstlisting" . ((:type optional :default "")))
+    ("tcolorbox" . ((:type optional :default "")))
+    ("tikzpicture" . ((:type optional :default "")))
+
+    ("figure" . ((:type optional :default "htbp")))
+    ("table" . ((:type optional :default "htbp"))))
   "Alist of environment argument specs added by a user.
 
 Each element is of the form:
