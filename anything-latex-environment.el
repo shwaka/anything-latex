@@ -45,8 +45,8 @@
     ("array" . ((:type mandatory :default "")))
     ("thebibliography" . ((:type mandatory :default "99")))
 
-    ("frame" . ((:type optional :default "")
-                (:type mandatory :default "")))
+    ;; ("frame" . ((:type optional :default "")
+    ;;             (:type mandatory :default "")))
     ("block" . ((:type mandatory :default "title")))
     ("exampleblock" . ((:type mandatory :default "title")))
     ("alertblock" . ((:type mandatory :default "title")))
