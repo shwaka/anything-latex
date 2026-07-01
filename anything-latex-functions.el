@@ -198,8 +198,19 @@
   (substring (al-kpsewhich (format "%s.bib" name))
 	     0 -1))
 
+(defvar al-bibliography-rx
+  ;; "^[^%]*\\\\bibliography{\\(.*\\)}" ; これだと長いファイルでstack overflowした
+  (rx line-start
+      (* (not (any "%\n")))
+      "\\bibliography"
+      (* (any " \t"))
+      "{"
+      (group (* (not (any "}\n"))))
+      "}")
+  "A regex used to find \\bigliography{...}")
+
 (defun al-find-bib-file-list--from-buffer (buffer)
-  (let ((pattern "^[^%]*\\\\bibliography{\\(.*\\)}"))  ;"^[^%]*\\\\bibliography{\\(.*\\)}" slow
+  (let ((pattern al-bibliography-rx))
     (with-current-buffer buffer
       (save-excursion
 	(goto-char (point-min))
